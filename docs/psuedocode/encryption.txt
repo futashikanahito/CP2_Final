@@ -1,0 +1,11 @@
+Import cryptography fernet as f 
+Define the function get key
+    use fernet to get a key
+    save the key under fernet
+    return the key location
+
+define function to encrypt based off of key with key location as an argument, and the text as an argument   
+    Encrypt the message and return the encrypted message
+
+define a function to decrypt with key location and text as an argument
+    Decrypt the message with the key and return the decrypted message
