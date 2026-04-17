@@ -1,5 +1,25 @@
-
 import hashlib, json,csv
+
+SPECIAL_CHARACTERS = set("!@#$%^&*()-_=+[]{}|:;'<>.,?/~`")
+
+def password_ok(password: str) -> bool:
+
+    if len(password) < 12:
+        return False
+
+    if not any(c.islower() for c in password):
+        return False
+
+    if not any(c.isupper() for c in password):
+        return False
+
+    if not any(c.isdigit() for c in password):
+        return False
+
+    if not any(c in SPECIAL_CHARACTERS for c in password):
+        return False
+
+    return True
 
 
 def dictify(items):
@@ -139,20 +159,8 @@ def add_user(username: str, hashed: str) -> None:
     users[username] = hashed
     json_dump('documents/user.json',users)
 
-def create_account():
-
-    while True:
-        name =  input("Choose a username: ").strip()
-
-        if not name:
-            print("Username cannot be blank.")
-            continue
-
-        if exists("documents/user.json",name):
-            print("That username is unavailable.")
-            continue
-
-        pw =  input("Choose a password (12+ chars, upper, lower, digit, special): ")
+def create_account(name,pw):
+        ok = password_ok(pw)
         add_user(name, hash_pw(pw))
         print("Account created.")
         return name
@@ -193,5 +201,3 @@ def new_goal_progress(goal):
             good=True
     new_progress = progress + goal[1]
     return [goal[0], new_progress]
-def logout(): 
-    return 
