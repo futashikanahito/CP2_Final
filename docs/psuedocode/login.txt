@@ -1,0 +1,50 @@
+#WG_CP2 Login
+#import helper, json
+#dictify function
+#loop through given dictionary or list
+#if current item is a list or dictionary
+#dictify it (recursion!)
+#if current item is an instance of one of our classes
+#run __dict__ on it to get it in dictionary form and set a variable to that
+#add a new key to the dictionary "classtype" and set it equal to type of object
+#replace the object in the dictionary with the __dict__ified object
+#return the dictionary
+#JSON writer function
+#if input is not a dictionary:
+#return false
+#if file path does not exist
+#return false
+#dictify the dictionary
+#open given file path
+#write dictionary to it
+#return true
+#JSON reader function
+#if file path does not exist
+#return false
+#open file path
+#grab data as a dictionary
+#undictify it
+#return data
+#A function to check if something exists
+#if this recieves a username that already is stored it will overwrite it with the hashed password provided.
+#define a function that allows for the creation of the account using the already exists checker to check for the user name already exists if so make them use a diffrent username
+ #get their password
+    
+    #hash their password and save its value
+
+#A function that reads the whole json
+
+#define a function that edits the account json adding accounts to the user json
+    
+    #Open the file in append mode
+    
+    #Use dictwriter to set the field names their username and their hashed password
+    
+    #write to the file their name password hashed and goal and progress 
+
+#A function to encrypt saved passwords with the hashlib library using a specific encryption  this is in helper library
+#A function that gets their goal and saves it
+#A function that takes in their previous progress towards their goal, and then asks how much more money they have added, and updates the progress.
+#Do the thing where you add the progress to the json
+
+#A function that logs them out and takes them back to the main menu without them being logged in.
