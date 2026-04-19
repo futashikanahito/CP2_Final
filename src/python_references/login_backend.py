@@ -1,7 +1,12 @@
 import hashlib, json,csv
+from flask import Flask, render_template, request
+
+app = Flask(__name__)
 
 SPECIAL_CHARACTERS = set("!@#$%^&*()-_=+[]{}|:;'<>.,?/~`")
-
+@app.route('/')
+def home():
+    return render_template('login.html')
 def password_ok(password: str) -> bool:
 
     if len(password) < 12:
@@ -69,10 +74,8 @@ def undictify(items):
                         value = item[key]
                         setattr(itemobj,key,value)
                     item = itemobj
-                except KeyError:
-                    print(f'The class {item['classtype']} is not imported into helper.py! Import it at the top of helper.py to make loading work properly!')
-                except Exception as e:
-                    print(f'Unknown error when loading object! {e}')
+                except:
+                    return "error"
             undictified.append(item)
     elif type(items) is dict:
         undictified = {}
@@ -94,10 +97,8 @@ def undictify(items):
                         value = item[key]
                         setattr(itemobj,key,value)
                     item = itemobj
-                except KeyError:
-                    print(f'The class {item['classtype']} is not imported into helper.py! Import it at the top of helper.py to make loading work properly!')
-                except Exception as e:
-                    print(f'Unknown error when loading object! {e}')
+                except:
+                    return "error"
             undictified[itemkey] = item
     return undictified
 
@@ -121,7 +122,7 @@ def create_json(file_path):
         with open(file_path,'w') as file:
             file.write('{}')
     except:
-        print('Directory does not exist!')
+        return "error"
 
 def json_pull(file_path):
     try:
@@ -148,10 +149,8 @@ def exists(location, search):
             for row in reader:
                 if row and row[0] == search:
                     return True
-    except FileNotFoundError:
-        print("file does not exist.")
-    except Exception:
-        print("error reading file")
+    except:
+        return False
     return False
 
 def add_user(username: str, hashed: str) -> None:
@@ -159,45 +158,24 @@ def add_user(username: str, hashed: str) -> None:
     users[username] = hashed
     json_dump('documents/user.json',users)
 
-def create_account(name,pw):
+@app.route("/create_account", methods=["POST"])
+def create_account():
+        name = request.form['username']
+        pw = request.form['pw']
         ok = password_ok(pw)
         add_user(name, hash_pw(pw))
-        print("Account created.")
         return name
-    
+
+@app.route("/login", methods=["POST"])
 def login():
-    while True:
         users = json_pull('documents/user.json')
-        name =  input("What is your username? ").strip()
-        pw =  input("What is your password? ")
-        hashed = hash_pw(pw)
+        hashed = hash_pw(request.form['pw'])
 
         for u in users.keys():
 
-            if u == name and users[u] == hashed:
-                print("Login successful.")
-                return name
-        print("Invalid username or password.")
+            if u == request.form['username'] and users[u] == hashed:
+                return request.form['username']
 
 
-def goal_get():
-    good=False
-    while True:
-        try:
-            goal = float( input(f"What do you want to set your goal too?",wrong=good).strip())
-            break
-        except:
-            good=True
-    return [goal, 0]
-
-
-def new_goal_progress(goal):
-    good=False
-    while True:
-        try:
-            progress = float( input(f"What progress have you made towards your goal?",wrong=good).strip())
-            break
-        except:
-            good=True
-    new_progress = progress + goal[1]
-    return [goal[0], new_progress]
+if __name__ == "__main__":
+    app.run(debug=True)
