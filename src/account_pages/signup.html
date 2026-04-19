@@ -18,15 +18,15 @@
         <div class="s-sample-panel">
             <div class="s-sample-box">
                 <h1>Start Your Journey</h1>
-                
-                <div class="s-input-group">
-                    <label>Username</label>
-                    <input type="text" placeholder="Enter username">
-                </div>
-    
+                <form action="/signup" method="POST">
+                    <div class="s-input-group">
+                        <label>Username</label>
+                        <input type="text" name="username" placeholder="Enter username">
+                    </div>
+                </form>
                 <div class="s-input-group">
                     <label>Password</label>
-                    <input type="password" placeholder="Enter password">
+                    <input type="password" name="pw" placeholder="Enter password">
                 </div>
     
                 <button class="s-sample-btn">Sign Up</button>

@@ -15,18 +15,19 @@
         <div class="s-sample-panel">
             <div class="s-sample-box">
                 <h1>Resume Efficiency</h1>
-                
-                <div class="s-input-group">
-                    <label>Username</label>
-                    <input type="text" placeholder="Enter username">
-                </div>
-    
-                <div class="s-input-group">
-                    <label>Password</label>
-                    <input type="password" placeholder="Enter password">
-                </div>
-    
-                <button class="s-sample-btn">Login</button>
+                <form action="/login" method="POST">
+                    <div class="s-input-group">
+                        <label>Username</label>
+                        <input type="text" name="username" placeholder="Enter username">
+                    </div>
+        
+                    <div class="s-input-group">
+                        <label>Password</label>
+                        <input type="password" name="pw" placeholder="Enter password">
+                    </div>
+        
+                    <button class="s-sample-btn">Login</button>
+                </form>
             </div>
         </div>
     
