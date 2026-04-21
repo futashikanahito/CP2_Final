@@ -158,22 +158,26 @@ def add_user(username: str, hashed: str) -> None:
     users[username] = hashed
     json_dump('documents/user.json',users)
 
-@app.route("/create_account", methods=["POST"])
+@app.route("/create_account", methods=["GET","POST"])
 def create_account():
-        name = request.form['username']
-        pw = request.form['pw']
+        name = request.args.get('username')
+        pw = request.args.get('pw')
         ok = password_ok(pw)
-        add_user(name, hash_pw(pw))
-        return name
+        if ok:
+            add_user(name, hash_pw(pw))
+            return True
+        else:
+            return False
 
-@app.route("/login", methods=["POST"])
+@app.route("/login", methods=["GET","POST"])
 def login():
         users = json_pull('documents/user.json')
-        hashed = hash_pw(request.form['pw'])
+        hashed = request.args.get('pw')
+        user = request.args.get('username')
 
         for u in users.keys():
 
-            if u == request.form['username'] and users[u] == hashed:
+            if u == user and users[u] == hashed:
                 return request.form['username']
 
 
