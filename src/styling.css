@@ -1,15 +1,11 @@
 /* ----------- UNIVERSAL ----------- */
 :root {
-    --secondary-black: #111010;
-    --secondary-grey: #9a9690;
-    --secondary-accent: #c8b89a;
-    --secondary-line: #e0ddd8;
-    --primary-color: #2563eb;
-    --primary-hover: #1d4ed8;
-    --text-dark: #1e293b;
-    --text-light: #64748b;
-    --bg-color: #f8fafc;
-    --white: #ffffff;
+    --black: #141A26;
+    --blue: #1D3759;
+    --darker-blue: #162840;
+    --lighter-blue: #1E4359;
+    --greener-blue: #183940;
+    --green: #005e49;
     --fs-display: clamp(3.5rem, 9vw, 8.5rem);
     --fs-sub: clamp(1rem, 2vw, 1.2rem);
     --fs-label: 0.72rem;
