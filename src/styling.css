@@ -6,6 +6,7 @@
     --very-dark-blue: #141A26;
     --greener-blue: #183f3a;
     --green: #005e49;
+    --red: #FF3131;
 
     --white: #ffffff;
     --secondary-white: #f0f0f0;
@@ -26,7 +27,8 @@
 
 /* ----------- FRONT PAGES ----------- */
 .primary-body {
-    background-color: var(--darker-blue);
+    background: url("../../../assets/dashboard_bg.png" ) no-repeat center center;
+    background-size: cover;
     color: var(--white);
     line-height: 1.6;
     display: flex;
@@ -351,10 +353,20 @@ nav {
 }
 
 body {
-    background-color: var(--darker-blue);
+    background: url("../../../assets/dashboard_bg.png" ) no-repeat center center;
+    background-size: cover;
     color: var(--white);
     line-height: 1.6;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+}
+
+/* red Footer */
+.red-footer {
+    text-align: center;
+    padding: 1.1rem;
+    color: var(--red);
+    height: 8px;
+    margin-top: auto;
 }

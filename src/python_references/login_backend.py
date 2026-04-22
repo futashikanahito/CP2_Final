@@ -1,7 +1,9 @@
-import hashlib, json,csv
+import hashlib, json, csv, os, webbrowser
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
+file_path_login = os.path.realpath("incorrect_login.html")
+file_path_create = os.path.realpath("account_not_option.html")
 
 SPECIAL_CHARACTERS = set("!@#$%^&*()-_=+[]{}|:;'<>.,?/~`")
 @app.route('/')
@@ -158,7 +160,7 @@ def add_user(username: str, hashed: str) -> None:
     users[username] = hashed
     json_dump('documents/user.json',users)
 
-@app.route("/create_account", methods=["GET","POST"])
+@app.route("/create_account", methods=["GET"])
 def create_account():
         name = request.args.get('username')
         pw = request.args.get('pw')
@@ -166,10 +168,11 @@ def create_account():
         if ok:
             add_user(name, hash_pw(pw))
             return True
+        
         else:
-            return False
+            webbrowser.open(f"file://{file_path_create}")
 
-@app.route("/login", methods=["GET","POST"])
+@app.route("/login", methods=["GET"])
 def login():
         users = json_pull('documents/user.json')
         hashed = request.args.get('pw')
@@ -179,6 +182,8 @@ def login():
 
             if u == user and users[u] == hashed:
                 return request.form['username']
+            
+        webbrowser.open(f"file://{file_path_login}")
 
 
 if __name__ == "__main__":
