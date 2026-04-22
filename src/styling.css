@@ -26,7 +26,8 @@
 
 /* ----------- FRONT PAGES ----------- */
 .primary-body {
-    background-color: var(--darker-blue);
+    background: url("../../../assets/dashboard_bg.png" ) no-repeat center center;
+    background-size: cover;
     color: var(--white);
     line-height: 1.6;
     display: flex;
@@ -351,7 +352,8 @@ nav {
 }
 
 body {
-    background-color: var(--darker-blue);
+    background: url("../../../assets/dashboard_bg.png" ) no-repeat center center;
+    background-size: cover;
     color: var(--white);
     line-height: 1.6;
     display: flex;
