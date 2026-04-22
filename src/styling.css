@@ -6,6 +6,7 @@
     --very-dark-blue: #141A26;
     --greener-blue: #183f3a;
     --green: #005e49;
+    --red: #FF3131;
 
     --white: #ffffff;
     --secondary-white: #f0f0f0;
@@ -357,4 +358,13 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+}
+
+/* red Footer */
+.red-footer {
+    text-align: center;
+    padding: 1.1rem;
+    color: var(--red);
+    height: 8px;
+    margin-top: auto;
 }
