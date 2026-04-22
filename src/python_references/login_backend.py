@@ -1,5 +1,5 @@
 import hashlib, json, csv, os, webbrowser
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 file_path_login = os.path.realpath("incorrect_login.html")
@@ -160,30 +160,29 @@ def add_user(username: str, hashed: str) -> None:
     users[username] = hashed
     json_dump('documents/user.json',users)
 
-@app.route("/create_account", methods=["GET"])
+@app.route("/create_account", methods=["POST"])
 def create_account():
-        name = request.args.get('username')
-        pw = request.args.get('pw')
-        ok = password_ok(pw)
-        if ok:
-            add_user(name, hash_pw(pw))
-            return True
-        
-        else:
-            webbrowser.open(f"file://{file_path_create}")
+    name = request.form.get('username')
+    pw = request.form.get('pw')
 
-@app.route("/login", methods=["GET"])
+    if password_ok(pw):
+        add_user(name, hash_pw(pw))
+        return redirect("/")
+    
+    return render_template("create.html", error="Password not strong enough")
+
+@app.route("/login", methods=["POST"])
 def login():
-        users = json_pull('documents/user.json')
-        hashed = request.args.get('pw')
-        user = request.args.get('username')
+    users = json_pull('documents/user.json')
 
-        for u in users.keys():
+    username = request.form.get('username')
+    pw = request.form.get('pw')
+    hashed = hash_pw(pw)
 
-            if u == user and users[u] == hashed:
-                return request.form['username']
-            
-        webbrowser.open(f"file://{file_path_login}")
+    if username in users and users[username] == hashed:
+        return redirect("/dashboard")
+
+    return render_template("login.html", error="Invalid username or password")
 
 
 if __name__ == "__main__":
