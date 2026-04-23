@@ -165,11 +165,11 @@ def create_account():
     name = request.form.get('username')
     pw = request.form.get('pw')
 
-    if password_ok(pw):
+    if password_ok(pw)==True:
         add_user(name, hash_pw(pw))
-        return redirect("/")
+        return redirect("/dashboard")
     
-    return render_template("create.html", error="Password not strong enough")
+    return redirect("/account_not_option")
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -180,9 +180,9 @@ def login():
     hashed = hash_pw(pw)
 
     if username in users and users[username] == hashed:
-        return redirect("/dashboard")
+        return redirect(url_for('dashboard'))
 
-    return render_template("login.html", error="Invalid username or password")
+    return redirect(url_for('incorrect_login'))
 
 
 if __name__ == "__main__":
