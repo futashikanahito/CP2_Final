@@ -54,9 +54,9 @@
     cursor: pointer;
   }
 
-  .close { background: #ff5f57; }
-  .min { background: #febc2e; }
-  .max { background: #28c840; }
+  .close { background: #ff0d00; }
+  .min { background: #ffd000; }
+  .max { background: #00ca00; }
 
   .content {
     padding: 10px;
@@ -108,13 +108,31 @@
     cursor: ns-resize;
   }
 
-  .resizer.corner {
+  .resizer.left {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    cursor: ew-resize;
+  }
+
+  .resizer.up {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    cursor: ns-resize;
+  }
+
+  .resizer.br-corner {
     right: 0;
     bottom: 0;
     width: 12px;
     height: 12px;
     cursor: nwse-resize;
   }
+
+
 </style>
 </head>
 <body>
@@ -148,7 +166,9 @@ function createWindow() {
     </div>
     <div class="resizer right"></div>
     <div class="resizer bottom"></div>
-    <div class="resizer corner"></div>
+    <div class="resizer left"></div>
+    <div class="resizer up"></div>
+    <div class="resizer br-corner"></div>
   `;
 
   document.getElementById('desktop').appendChild(win);
