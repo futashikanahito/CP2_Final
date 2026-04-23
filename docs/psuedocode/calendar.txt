@@ -1,0 +1,105 @@
+Import calendar ibrary
+From datetime ibrary import datetime ibrary
+Import json library
+Import os
+
+Set file name to file name
+
+
+FILE HANDLING
+Define load_tasks function
+    if the os path does not exsist using filename
+        open filename in read mode as a file
+            reurn json loaded file
+    return empty dictionary
+
+Define save_tasks with tasks
+    open filename in write mode as a file
+        dump sdon file with tasks and with indents with 4
+
+
+DISPLAY
+Define display_calendar with year month and tasks
+    if month is lesss that 1 or month is greater than 12
+        Display invalid month
+        return
+
+    Display calendar format
+    Display calendar as text and formated
+
+    Display Scheduled Tasks:
+    found is set to False
+
+    for every date and task_list in tasks.items
+        try:
+            d is set to datetime formated
+        except:
+            continue
+
+        if d.year is equal to year and d.month is equal to month
+            for every task in task_list:
+            due is set to formated Due Date Display
+            Display Task description
+            found is set to True
+
+    if not found
+        Display No tasks this month.
+
+
+ADD TASK
+Define add_tasks function with tasks
+    date is set to an input asking for the date. Stripped of whitespace.
+
+    try:
+        datetime formated
+    except if theres a Value Error:
+        Display Invalid Date format
+        return
+
+    desc is set to an input asking for a Task Description. Stripped of whitespace.
+    due is set to an input asking for Due Date (optional). Stripped of whitespace.
+
+    if date is not in tasks
+        tasks with date is set to a list
+    
+    tasks with date is appened to the description dictionary
+    run save_tasks function with tasks
+    Display Task Saved
+
+
+MAINLOOP
+Define main function
+    tasks is set to load_tasks function
+
+    while True
+        Display TASK CALENDAR formated
+        Display 1. View Calendar
+        Display 2. Add Task
+        Display 3. Exit
+
+        choice is set to an input asking to choose. Stripped of whitespace.
+
+        If choice is set to 1
+            try:
+                year is set to an integer input asking for the year
+                month is set to an inger input asking for the Month (1-12)
+                display_calendar function with year month and tasks
+            except a Value Error
+                Display Invalid number
+        
+        Also if choice is set to 2
+            add_tasks function with tasks
+
+        Also if choice is set to 3
+            Display Goodbye.
+            break loop.
+
+        Else:
+            Display Invalid option
+
+RUN
+if name is set to main:
+    run main function
+
+
+    
