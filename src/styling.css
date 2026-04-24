@@ -208,7 +208,6 @@
 .secondary-body {
     background: var(--white);
     color: var(--secondary-black);
-    font-family: 'DM Sans', sans-serif;
     font-weight: 300;
     line-height: 1.6;
     overflow-x: hidden;
@@ -248,7 +247,6 @@
 }
 
 .s-sample-box h1 {
-    font-family: 'Cormorant Garamond', serif;
     font-size: 2.5rem;
     margin-bottom: 2rem;
 }
