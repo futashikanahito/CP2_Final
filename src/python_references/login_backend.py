@@ -1,14 +1,12 @@
 import hashlib, json, csv, os, webbrowser
 from flask import Flask, render_template, request, redirect, url_for
 
-app = Flask(__name__)
-file_path_login = os.path.realpath("incorrect_login.html")
-file_path_create = os.path.realpath("account_not_option.html")
+app = Flask(__name__, template_folder='../')
 
 SPECIAL_CHARACTERS = set("!@#$%^&*()-_=+[]{}|:;'<>.,?/~`")
 @app.route('/')
 def home():
-    return render_template('login.html')
+    return render_template('account_pages/login.html')
 def password_ok(password: str) -> bool:
 
     if len(password) < 12:
@@ -156,33 +154,55 @@ def exists(location, search):
     return False
 
 def add_user(username: str, hashed: str) -> None:
-    users = json_pull('documents/user.json')
+    users = json_pull('../docs/user.json')
     users[username] = hashed
-    json_dump('documents/user.json',users)
+    json_dump('../docs/user.json',users)
 
-@app.route("/create_account", methods=["POST"])
+@app.route('/dashboard')
+def dashboard():
+    user = request.args.get('user')  # Optional: Pass user data if needed
+    return render_template('dashboard/dashboard.html')
+
+@app.route('/incorrect_login')
+def incorrect_login():
+    return render_template('account_pages/incorrect_login.html')
+
+@app.route('/account_not_option')
+def account_not_option():
+    return render_template('account_pages/account_not_option.html')
+
+
+@app.route("/signup", methods=["POST"])
 def create_account():
-    name = request.form.get('username')
-    pw = request.form.get('pw')
-
-    if password_ok(pw)==True:
-        add_user(name, hash_pw(pw))
-        return redirect("/dashboard")
-    
-    return redirect("/account_not_option")
+    if request.method == "POST":
+        users = json_pull('../docs/accounts.json')
+        if not users:
+            users = {}
+        name = request.form.get('username')
+        pw = request.form.get('pw')
+        if name in users:
+            return render_template('account_pages/account_not_option.html')
+        if password_ok(pw)==True:
+            add_user(name, hash_pw(pw))
+            return redirect(url_for('dashboard/dashboard'))
+        
+        return render_template('account_pages/password_struggle.html')
+    return render_template("signup.html")
 
 @app.route("/login", methods=["POST"])
 def login():
-    users = json_pull('documents/user.json')
-
+    users = json_pull('../docs/accounts.json')
+    if not users:
+        users = {}
     username = request.form.get('username')
     pw = request.form.get('pw')
     hashed = hash_pw(pw)
 
     if username in users and users[username] == hashed:
-        return redirect(url_for('dashboard'))
+        return render_template('dashboard/dashboard.html')
 
-    return redirect(url_for('incorrect_login'))
+    return render_template('account_pages/incorrect_login.html')
+   
 
 
 if __name__ == "__main__":
