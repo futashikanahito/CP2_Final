@@ -283,23 +283,30 @@
     display: block;
     width: 100%;
     padding: 12px;
-    background: var(--secondary-black);
-    color: var(--white);
-    border: 2px solid var(--secondary-black);
     margin-top: 10px;
     cursor: pointer;
     transition: 0.3s;
     border-radius: 5px;
     text-align: center;
     text-decoration: none;
+    
+    background-color: var(--black);
+    color: var(--white);
+    border: 2px solid var(--secondary-black);
+
+    /* FONT STYLING */
+    font-weight: 600;
+    font-family: inherit;
+    font-size: 1rem;
 }
 
 .s-sample-btn:hover {
-    background: var(--secondary-accent);
-    box-shadow: 0 4px 12px rgba(112, 112, 112, 0.3);
-    color: var(--black);
+    /* --- NEW HOVER EFFECT (Matches Home Page) --- */
+    background-color: var(--secondary-black);
+    border-color: var(--black);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    color: var(--white);
 }
-
 
 /* ----------- DASHBOARD ----------- */
 
