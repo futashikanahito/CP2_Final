@@ -1,0 +1,57 @@
+set zIndex var to 1
+
+define function createwindow()
+    make a constant named win equal to a div
+    set win class name to window
+    set win top to 50 pixels
+    set win left to 50 pixels
+    set win to top z level (via zIndex)
+
+    make inner html for window:
+        [This will make the window show in html and also show corresponding html file]
+    
+    get desktop and append win to it
+
+    make a constant named titlebar = win's titlebar section
+    set dragging to false
+    define x and y (w/o a value)
+
+    when clicking on titlebar (parameter mouse)
+        let dragging be true
+        set offsetx and offsety to position mouse clicked on the window
+        set window to top z level
+    
+    when mouse is moving (parameter mouse)
+        if dragging
+            set window to mouse position
+        if resizing
+            call function resizewindow
+    
+    when mouse is not down
+        set dragging to false
+        set resizing to false
+
+    make a button in titlebar that deletes window
+    make a button in titlebar that minimizes the window
+    make a button in titlebar that maximizes the window
+
+    set resizing to false
+    set direction to nothing
+    define startX, startY, to startW, startH with no value
+
+    define setup for resize function (parameters dir and mouse)
+        set resizing to true
+        set direction to dir
+        set startX to mouse's x value
+        set startY to mouse's y value
+        set startW to the window's width made into an int
+        set startH to the window's height made into an int
+        set window to top z 
+    
+    call setup resize function for whenever the user touches a edge or corner
+
+    define resizing function (parameter mouse)
+        if direction is right, left, or any corner
+            set window width to correct width
+        if direction is bottom, top, or any corner
+            set window height to correct height
