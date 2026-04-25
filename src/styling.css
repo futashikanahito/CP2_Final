@@ -447,7 +447,7 @@ body {
     position: absolute;
     width: 400px;
     height: 300px;
-    background: #fff;
+    background: #141A26;
     border-radius: 8px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.4);
     overflow: hidden;
@@ -479,9 +479,9 @@ body {
     cursor: pointer;
 }
 
-.close { background: #ff0d00; }
-.min { background: #ffd000; }
-.max { background: #00ca00; }
+.close {background: #ff0d00}
+.min {background: #ffd000}
+.max {background: #00ca00}
 
 .content {
     padding: 10px;
