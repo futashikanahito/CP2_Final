@@ -1,0 +1,18 @@
+I apologize in advance, this psuedocode is not very detailed because I don't know really how this'll work yet...
+
+----------- CHECKLIST -----------
+define load_tasks function
+    while tab is opened
+        get the stored tasks from the server 
+        (should be something like [(taskname,done),(taskname,not done), ...])
+        send task_list to html file (where it will be shown)
+
+----------- ANNOUNCEMENTS -----------
+def get_announcements function
+    while tab is opened
+        get the stored server notifications from the server
+        (should be something like ["","","",...])
+        send announcements to html file (where it will be shown)
+    
+The while loops might have to be built in the html file, but the functionality will still be the same.
+There will also be a notepad but that can be done entirely via html and css as it won't be saved.
