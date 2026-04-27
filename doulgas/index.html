@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Chat Test t3 - Final Fix</title>
     <!-- Use specific version from CDN for high availability -->
-    <script src="https://cloudflare.com"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="https://meet.jit.si/external_api.js"></script>
     <style>
         body { font-family: monospace; background: #1e1e1e; color: #ccc; padding: 20px; }
@@ -46,8 +46,10 @@
     </div>
 
     <div class="section">
-        <h3>Video Call</h3>
-        <div id="meet" style="height: 400px; width: 100%; background: #000;"></div>
+    <h3>Video Call</h3>
+    <button onclick="joinCall()">Join Call</button>
+    <button onclick="leaveCall()">Leave Call</button>
+    <div id="meet" style="height: 400px; width: 100%; background: #000;"></div>
     </div>
 
 <script>
@@ -59,9 +61,9 @@
     function initSocket() {
         if (typeof io !== 'undefined') {
             // Added explicit path to handle potential proxy issues
-            socket = io({
-                transports: ['websocket', 'polling'],
-                reconnection: true
+            socket = io(window.location.origin, {
+                path: "/socket.io",
+                transports: ["websocket"],
             });
 
             socket.on('connect', () => setStat('socket', 'Connected', 'ok'));
@@ -80,7 +82,7 @@
         setStat('api', 'Testing...', 'wait');
         try {
             // Fixed double slash with .replace
-            const url = (BASE + '/user/servers/health_check').replace(/\/+/g, '/');
+            const url = (BASE + `/user/servers/${currentUser || 'test'}`).replace(/\/+/g, '/');
             const r = await fetch(url);
             setStat('api', r.ok || r.status === 404 ? 'Healthy' : 'Error ' + r.status, 'ok');
         } catch (e) {
@@ -146,7 +148,41 @@
         chat.innerHTML = '';
         messages.forEach(m => chat.innerHTML += `<div><strong>${m.id}:</strong> ${m.message}</div>`);
         chat.scrollTop = chat.scrollHeight;
-        startVideo(sid, chan);
+    }
+
+    function joinCall() {
+    if (!currentServer || !currentChannel) {
+        alert("Join a channel first");
+        return;
+    }
+
+    if (jitsiApi) {
+        alert("Already in call");
+        return;
+    }
+
+    setStat('video', 'Joining...', 'wait');
+
+    jitsiApi = new JitsiMeetExternalAPI('meet.jit.si', {
+        roomName: `ChatTest_${currentServer}_${currentChannel}`,
+        width: '100%',
+        height: 400,
+        parentNode: document.querySelector('#meet'),
+        userInfo: { displayName: currentUser || 'Guest' }
+    });
+
+    jitsiApi.addEventListener('videoConferenceJoined', () => {
+        setStat('video', 'Live', 'ok');
+    });
+}
+
+    function leaveCall() {
+        if (jitsiApi) {
+            jitsiApi.dispose();
+            jitsiApi = null;
+            document.getElementById('meet').innerHTML = '';
+            setStat('video', 'Left Call', 'wait');
+        }
     }
 
     function startVideo(server, channel) {
@@ -176,6 +212,11 @@
 
     window.onload = () => {
         initSocket();
+        socket.on('new-message', (msg) => {
+            const chat = document.getElementById('chat');
+            chat.innerHTML += `<div><strong>${msg.id}:</strong> ${msg.message}</div>`;
+            chat.scrollTop = chat.scrollHeight;
+        });
         runDiagnostics();
     };
 </script>
