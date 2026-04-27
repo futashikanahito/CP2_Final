@@ -27,9 +27,9 @@
                         <input type="password" name="pw" placeholder="Enter password">
                     </div>
 
-                    <button class="s-sample-btn" type="submit">Login</button>
+                    <form class="s-sample-btn" type="submit">Login</form>
                     <script>
-                        let login_result = login("username", "password");
+                        let login_result = login(username, pw);
                         if (login_result) {
                             // Redirect to the main page or dashboard
                             window.location.href = "../dashboard/dashboard.html";
