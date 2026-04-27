@@ -1,4 +1,4 @@
-import hashlib, json,csv
+import hashlib, json, csv, os, webbrowser
 
 
 SPECIAL_CHARACTERS = set("!@#$%^&*()-_=+[]{}|:;'<>.,?/~`")
@@ -150,9 +150,9 @@ def exists(location, search):
     return False
 
 def add_user(username: str, hashed: str) -> None:
-    users = json_pull('documents/user.json')
+    users = json_pull('../docs/user.json')
     users[username] = hashed
-    json_dump('documents/user.json',users)
+    json_dump('../docs/user.json',users)
 
 def create_account(username: str, password: str):
         name = username
@@ -161,11 +161,18 @@ def create_account(username: str, password: str):
         add_user(name, hash_pw(pw))
         return name
 
-def login(username: str, password: str):
-        users = json_pull('documents/user.json')
-        hashed = hash_pw(password)
+@app.route("/login", methods=["POST"])
+def login():
+    users = json_pull('../docs/accounts.json')
+    if not users:
+        users = {}
+    username = request.form.get('username')
+    pw = request.form.get('pw')
+    hashed = hash_pw(pw)
 
-        for u in users.keys():
+    if username in users and users[username] == hashed:
+        return render_template('dashboard/dashboard.html')
 
-            if u == username and users[u] == hashed:
-                return username
+    return render_template('account_pages/incorrect_login.html')
+   
+

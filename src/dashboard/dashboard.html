@@ -9,21 +9,30 @@
 <body>
     <nav class="primary-nav">
         <a href="../front_pages/front.html" class="p-logo">
-            <img src="../../assets/logo.png" width="500" height="100" alt="Website Logo">
+            <img src="../../assets/logo.png" width="250" height="50" alt="Website Logo">
         </a>
         <div class="p-nav-buttons">
-            <a href="../front_pages/front.html" class="p-btn-outline">Home</a>
+            <a href="../front_pages/index.html" class="p-btn-outline">Home</a>
             <a href="../account_pages/login.html" class="p-btn-outline">Logout</a>
         </div>
     </nav>
 
-    <main class="primary-main">
-        <h1>Welcome to your Dashboard!</h1>
-        <p>This is where you can manage your projects, tasks, and collaborate with your team.</p>
-    </main>
+    <div id="desktop"></div>
+    <div class="dropup">
+        <button class="dropbtn p-btn-filled">New Window</button>
+        <div class="dropup-content">
+            <button onclick="createWindow('Calendar')" class="dropup-div">New Calendar</button>
+            <button onclick="createWindow('Video Calls')" class="dropup-div">New Video Call</button>
+            <button onclick="createWindow('Chatrooms')" class="dropup-div">New Chatroom</button>
+            <button onclick="createWindow('Notepad', '../db_content/notepad.html')" class="dropup-div">New Notepad</button>
+            <button onclick="createWindow('Task Manager')" class="dropup-div">New Task Manager</button>
+        </div>
+    </div>
 
-     <footer class="primary-footer">
-         <p>&copy; 2026 WorkFlow. No rights reserved.</p>
-     </footer>
+    <footer class="primary-footer">
+        <p>&copy; 2026 WorkFlow. No rights reserved.</p>
+    </footer>
+
+    <script src="functionality.js"></script>
 </body>
 </html>

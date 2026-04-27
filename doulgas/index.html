@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Test t3 - Final Fix</title>
+    <!-- Use specific version from CDN for high availability -->
+    <script src="https://cloudflare.com"></script>
+    <script src="https://meet.jit.si/external_api.js"></script>
+    <style>
+        body { font-family: monospace; background: #1e1e1e; color: #ccc; padding: 20px; }
+        input, button, select { background: #2e2e2e; color: #ccc; border: 1px solid #444; padding: 6px 10px; margin: 4px; }
+        button { cursor: pointer; }
+        button:hover { background: #3e3e3e; }
+        #chat { border: 1px solid #444; padding: 10px; height: 300px; overflow-y: auto; margin: 10px 0; }
+        .section { margin: 16px 0; border-top: 1px solid #333; padding-top: 12px; }
+        #diag-box { background: #252525; border: 1px solid #444; padding: 10px; margin-bottom: 20px; border-radius: 5px; }
+        .stat { margin: 4px 0; font-size: 0.9em; }
+        .dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 10px; background: grey; }
+        .ok { background: #4caf50; } .err { background: #f44336; } .wait { background: #ff9800; }
+    </style>
+</head>
+<body>
+
+    <div id="diag-box">
+        <strong>System Status:</strong>
+        <div class="stat"><span id="dot-socket" class="dot"></span> Socket Server: <span id="text-socket">Connecting...</span></div>
+        <div class="stat"><span id="dot-api" class="dot"></span> API Backend: <span id="text-api">Checking...</span></div>
+        <div class="stat"><span id="dot-video" class="dot"></span> Room Status: <span id="text-video">Waiting...</span></div>
+        <button onclick="runDiagnostics()" style="font-size: 0.7em;">Retry Diagnostics</button>
+    </div>
+
+    <div class="section">
+        <h3>login</h3>
+        <input id="username" type="text" placeholder="username">
+        <button onclick="login()">login</button>
+        <p id="login-status"></p>
+    </div>
+
+    <div class="section">
+        <h3>chat</h3>
+        <select id="chat-server-id" onchange="loadChannels()"><option value="">select server</option></select>
+        <select id="chat-channel" onchange="openChannel()"><option value="">select channel</option></select>
+        <div id="chat"></div>
+        <input id="message-input" type="text" placeholder="type a message">
+        <button onclick="sendMessage()">send</button>
+    </div>
+
+    <div class="section">
+        <h3>Video Call</h3>
+        <div id="meet" style="height: 400px; width: 100%; background: #000;"></div>
+    </div>
+
+<script>
+    const BASE = '/api'; 
+    let currentUser = '', currentServer = '', currentChannel = '', jitsiApi = null;
+    let socket = null;
+
+    // --- 1. INITIALIZE SOCKET ---
+    function initSocket() {
+        if (typeof io !== 'undefined') {
+            // Added explicit path to handle potential proxy issues
+            socket = io({
+                transports: ['websocket', 'polling'],
+                reconnection: true
+            });
+
+            socket.on('connect', () => setStat('socket', 'Connected', 'ok'));
+            socket.on('connect_error', (e) => setStat('socket', 'Error: ' + e.message, 'err'));
+        } else {
+            setStat('socket', 'Library Load Error', 'err');
+        }
+    }
+
+    function setStat(id, text, state) {
+        document.getElementById(`text-${id}`).innerText = text;
+        document.getElementById(`dot-${id}`).className = `dot ${state}`;
+    }
+
+    async function runDiagnostics() {
+        setStat('api', 'Testing...', 'wait');
+        try {
+            // Fixed double slash with .replace
+            const url = (BASE + '/user/servers/health_check').replace(/\/+/g, '/');
+            const r = await fetch(url);
+            setStat('api', r.ok || r.status === 404 ? 'Healthy' : 'Error ' + r.status, 'ok');
+        } catch (e) {
+            setStat('api', 'Unreachable', 'err');
+        }
+    }
+
+    // --- 2. CORE LOGIC ---
+    async function login() {
+        const username = document.getElementById('username').value.trim();
+        if (!username) return;
+        currentUser = username;
+        try {
+            const url = (BASE + `/user/servers/${username}`).replace(/\/+/g, '/');
+            const r = await fetch(url);
+            if (r.status === 404) {
+                if (confirm('Create account?')) await fetch((BASE + '/user/create').replace(/\/+/g, '/'), {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username})
+                });
+            }
+            document.getElementById('login-status').innerText = `Logged in: ${username}`;
+            loadServers();
+        } catch(e) { console.error("Login failed", e); }
+    }
+
+    async function loadServers() {
+        try {
+            const url = (BASE + `/user/servers/${currentUser}`).replace(/\/+/g, '/');
+            const servers = await (await fetch(url)).json();
+            const select = document.getElementById('chat-server-id');
+            select.innerHTML = '<option value="">select server</option>';
+            servers.forEach(s => select.innerHTML += `<option value="${s}">${s}</option>`);
+        } catch(e) { console.error("Load servers failed", e); }
+    }
+
+    async function loadChannels() {
+        const sid = document.getElementById('chat-server-id').value;
+        const url = (BASE + `/server/channels/${sid}`).replace(/\/+/g, '/');
+        const channels = await (await fetch(url)).json();
+        const select = document.getElementById('chat-channel');
+        select.innerHTML = '<option value="">select channel</option>';
+        channels.forEach(c => select.innerHTML += `<option value="${c}">#${c}</option>`);
+    }
+
+    async function openChannel() {
+        const sid = document.getElementById('chat-server-id').value;
+        const chan = document.getElementById('chat-channel').value;
+        if (!sid || !chan) return;
+
+        if (socket && currentServer && currentChannel) {
+            socket.emit('leave', {server_id: currentServer, channel: currentChannel});
+        }
+
+        currentServer = sid;
+        currentChannel = chan;
+        if (socket) socket.emit('join', {server_id: sid, channel: chan});
+
+        const url = (BASE + `/message/get/${sid}/${chan}`).replace(/\/+/g, '/');
+        const messages = await (await fetch(url)).json();
+        const chat = document.getElementById('chat');
+        chat.innerHTML = '';
+        messages.forEach(m => chat.innerHTML += `<div><strong>${m.id}:</strong> ${m.message}</div>`);
+        chat.scrollTop = chat.scrollHeight;
+        startVideo(sid, chan);
+    }
+
+    function startVideo(server, channel) {
+        if (jitsiApi) jitsiApi.dispose();
+        setStat('video', 'Joining...', 'wait');
+        jitsiApi = new JitsiMeetExternalAPI('meet.jit.si', {
+            roomName: `ChatTest_${server}_${channel}`,
+            width: '100%', height: 400,
+            parentNode: document.querySelector('#meet'),
+            userInfo: { displayName: currentUser || 'Guest' }
+        });
+        jitsiApi.addEventListener('videoConferenceJoined', () => setStat('video', 'Live', 'ok'));
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('message-input');
+        const msg = input.value.trim();
+        if (!msg || !currentServer || !currentChannel) return;
+        const url = (BASE + '/message/send').replace(/\/+/g, '/');
+        await fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ username: currentUser, server_id: currentServer, channel: currentChannel, msg: msg })
+        });
+        input.value = '';
+    }
+
+    window.onload = () => {
+        initSocket();
+        runDiagnostics();
+    };
+</script>
+</body>
+</html>
