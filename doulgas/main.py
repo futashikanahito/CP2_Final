@@ -3,38 +3,60 @@ from flask_socketio import SocketIO, join_room, leave_room, emit
 from flask_cors import CORS
 import json
 import os
+import requests
+import hashlib
+import hmac
 
 app = Flask(__name__, static_folder='static')
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-BASE = '/DL_CP2'
+BASE = '/api'
 
+# --- plugNmeet Configuration ---
+# Replace these with the values provided after your plugNmeet installation
+PNM_API_URL = "http://YOUR_SERVER_IP:8080/auth" 
+PNM_API_KEY = "your_api_key"
+PNM_API_SECRET = "your_api_secret"
+
+def pnm_request(method, data):
+    """Helper to send authenticated POST requests to plugNmeet API"""
+    payload = json.dumps(data)
+    signature = hmac.new(PNM_API_SECRET.encode(), payload.encode(), hashlib.sha256).hexdigest()
+    
+    headers = {
+        'x-api-key': PNM_API_KEY,
+        'x-api-signature': signature,
+        'Content-Type': 'application/json'
+    }
+    try:
+        response = requests.post(f"{PNM_API_URL}/{method}", headers=headers, data=payload)
+        return response.json()
+    except Exception as e:
+        return {"status": False, "msg": str(e)}
+
+# --- Existing Helpers ---
 def load_json(path):
-    if not os.path.exists(path):
-        return None
-    with open(path, 'r') as f:
-        return json.load(f)
+    if not os.path.exists(path): return None
+    with open(path, 'r') as f: return json.load(f)
 
 def save_json(path, data):
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, 'w') as f:
-        json.dump(data, f)
+    with open(path, 'w') as f: json.dump(data, f)
 
 def get_user(username):
     return load_json(f"{BASE}/users/{username}.json")
 
 def is_server_owner(username, server_id):
     info = load_json(f"{BASE}/servers/{server_id}/info.json")
-    if info is None:
-        return False
-    return info.get('owner') == username
+    return info.get('owner') == username if info else False
 
 def is_server_member(username, server_id):
     members = load_json(f"{BASE}/servers/{server_id}/members.json") or []
     return username in members
 
-# serve the frontend
+# --- Routes ---
+
 @app.route('/')
 def index():
     return send_from_directory('static', 'index.html')
@@ -52,8 +74,7 @@ def create_user():
 @app.route('/user/servers/<username>', methods=['GET'])
 def get_user_servers(username):
     user = get_user(username)
-    if user is None:
-        return jsonify({"status": "error", "msg": "User not found"}), 404
+    if user is None: return jsonify({"status": "error", "msg": "User not found"}), 404
     return jsonify(user.get('servers', []))
 
 @app.route('/server/create', methods=['POST'])
@@ -72,6 +93,43 @@ def create_server():
     user['servers'].append(server_id)
     save_json(f"{BASE}/users/{username}.json", user)
     return jsonify({"status": "success"})
+
+# --- New plugNmeet Endpoint ---
+@app.route('/server/call/get_token', methods=['POST'])
+def get_call_token():
+    data = request.get_json()
+    username = data.get('username')
+    server_id = data.get('server_id')
+
+    if not is_server_member(username, server_id):
+        return jsonify({"status": "error", "msg": "Not a member"}), 403
+
+    # 1. Ensure the room exists on the plugNmeet server
+    pnm_request("room/create", {
+        "room_id": f"room-{server_id}",
+        "room_title": f"Server {server_id} Lounge",
+        "metadata": {
+            "room_features": {"allow_webcams": True, "allow_screen_share": True, "allow_recording": False}
+        }
+    })
+
+    # 2. Get join token for this user
+    res = pnm_request("room/getJoinToken", {
+        "room_id": f"room-{server_id}",
+        "user_info": {
+            "name": username,
+            "user_id": username,
+            "is_admin": is_server_owner(username, server_id)
+        }
+    })
+
+    if res.get("status"):
+        return jsonify({
+            "status": "success", 
+            "token": res.get("token"),
+            "server_url": PNM_API_URL.replace("/auth", "") # The base URL for the client
+        })
+    return jsonify({"status": "error", "msg": res.get("msg", "API Error")}), 500
 
 @app.route('/server/delete', methods=['POST'])
 def delete_server():
@@ -109,8 +167,7 @@ def add_user():
 @app.route('/server/channels/<server_id>', methods=['GET'])
 def get_channels(server_id):
     path = f"{BASE}/servers/{server_id}/channels"
-    if not os.path.exists(path):
-        return jsonify([])
+    if not os.path.exists(path): return jsonify([])
     channels = [f.replace('.json', '') for f in os.listdir(path) if f.endswith('.json')]
     return jsonify(channels)
 
@@ -137,11 +194,8 @@ def send_message():
 def get_messages(server_id, channel):
     path = f"{BASE}/servers/{server_id}/channels/{channel}.json"
     messages = load_json(path)
-    if messages is None:
-        return jsonify([])
-    return jsonify(messages)
+    return jsonify(messages if messages else [])
 
-# socketio events
 @socketio.on('join')
 def on_join(data):
     room = f"{data['server_id']}-{data['channel']}"
@@ -153,4 +207,4 @@ def on_leave(data):
     leave_room(room)
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
+    socketio.run(app, host='0.0.0.0', port=5000)
