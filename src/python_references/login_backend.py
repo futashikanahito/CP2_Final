@@ -170,7 +170,7 @@ def login(username: str, password: str):
     pw = password
     hashed = hash_pw(pw)
 
-    if username in users and users[username] == hashed:
+    if username in users and users[name] == hashed:
         return True
 
     return False

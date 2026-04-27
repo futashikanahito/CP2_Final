@@ -15,7 +15,8 @@
         <div class="s-sample-panel">
             <div class="s-sample-box">
                 <h1>WorkFlow Login</h1>
-                <form action="/login" method="POST">
+                <script src="login_backend.js" defer></script>
+
                     <div class="s-input-group">
                         <label>Username</label>
                         <input type="text" name="username" placeholder="Enter username">
@@ -27,7 +28,15 @@
                     </div>
 
                     <button class="s-sample-btn" type="submit">Login</button>
-                </form>
+                    <script>
+                        let login_result = login("username", "password");
+                        if (login_result) {
+                            // Redirect to the main page or dashboard
+                            window.location.href = "../dashboard/dashboard.html";
+                        } else {
+                            window.location.href = "../account_pages/incorrect_login.html";
+                        }
+                    </script>
             </div>
         </div>
     
