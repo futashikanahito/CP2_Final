@@ -161,18 +161,18 @@ def create_account(username: str, password: str):
         add_user(name, hash_pw(pw))
         return name
 
-@app.route("/login", methods=["POST"])
-def login():
+
+def login(username: str, password: str):
     users = json_pull('../docs/accounts.json')
     if not users:
         users = {}
-    username = request.form.get('username')
-    pw = request.form.get('pw')
+    name = username
+    pw = password
     hashed = hash_pw(pw)
 
     if username in users and users[username] == hashed:
-        return render_template('dashboard/dashboard.html')
+        return True
 
-    return render_template('account_pages/incorrect_login.html')
+    return False
    
 
