@@ -1,12 +1,8 @@
 import hashlib, json,csv
-from flask import Flask, render_template, request
 
-app = Flask(__name__)
 
 SPECIAL_CHARACTERS = set("!@#$%^&*()-_=+[]{}|:;'<>.,?/~`")
-@app.route('/')
-def home():
-    return render_template('login.html')
+
 def password_ok(password: str) -> bool:
 
     if len(password) < 12:
@@ -158,24 +154,18 @@ def add_user(username: str, hashed: str) -> None:
     users[username] = hashed
     json_dump('documents/user.json',users)
 
-@app.route("/create_account", methods=["POST"])
-def create_account():
-        name = request.form['username']
-        pw = request.form['pw']
+def create_account(username: str, password: str):
+        name = username
+        pw = password
         ok = password_ok(pw)
         add_user(name, hash_pw(pw))
         return name
 
-@app.route("/login", methods=["POST"])
-def login():
+def login(username: str, password: str):
         users = json_pull('documents/user.json')
-        hashed = hash_pw(request.form['pw'])
+        hashed = hash_pw(password)
 
         for u in users.keys():
 
-            if u == request.form['username'] and users[u] == hashed:
-                return request.form['username']
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
+            if u == username and users[u] == hashed:
+                return username
