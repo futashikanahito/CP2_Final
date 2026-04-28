@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Task Manager</title>
+    
+    <link rel="stylesheet" href="content_styling.css">
+    
+    <style>
+        .task-container { max-width: 900px; margin: 20px auto; font-family: sans-serif; color: #ffffff;}
+        .task-form, .task-list { border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin-bottom: 20px; color: #ffffff;}
+        .form-group { margin-bottom: 15px; color: #ffffff;}
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #ffffff;}
+        .task-item { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 10px 0; color: #ffffff;}
+        .task-meta { font-size: 0.85rem; color: #ffffff; }
+    </style>
+</head>
+<body>
+
+    <div class="task-container">
+        <header class="dashboard-header">
+            <h2>Team Task Manager</h2>
+        </header>
+
+        <section class="task-form-section">
+            <div class="task-form">
+                <h3>Assign New Task</h3>
+                <form id="taskManagerForm">
+                    <div class="form-group">
+                        <label for="taskName">Task Description</label>
+                        <input type="text" id="taskName" name="taskName" placeholder="e.g., Update Q3 Reports" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignee">Assign To</label>
+                        <select id="assignee" name="assignee">
+                            <option value="alex">Alex Johnson</option>
+                            <option value="sarah">Sarah Miller</option>
+                            <option value="team">Development Team</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dueDate">Due Date</label>
+                        <input type="date" id="dueDate" name="dueDate" required>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Assign Task</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="task-list-section">
+            <div class="task-list">
+                <h3>Current Tasks</h3>
+                <div id="taskListContainer">
+                    <div class="task-item">
+                        <div class="task-info">
+                            <strong>Finalize UI Design</strong>
+                            <div class="task-meta">Assigned to: Sarah Miller</div>
+                        </div>
+                        <div class="task-status">
+                            <span class="date-badge">Due: 2026-05-15</span>
+                            <button class="btn-status">Mark Complete</button>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Simple logic to handle form submission
+        document.getElementById('taskManagerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('taskName').value;
+            const assignee = document.getElementById('assignee').options[document.getElementById('assignee').selectedIndex].text;
+            const date = document.getElementById('dueDate').value;
+
+            const taskHTML = `
+                <div class="task-item">
+                    <div class="task-info">
+                        <strong>${name}</strong>
+                        <div class="task-meta">Assigned to: ${assignee}</div>
+                    </div>
+                    <div class="task-status">
+                        <span class="date-badge">Due: ${date}</span>
+                        <button class="btn-status">Mark Complete</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('taskListContainer').insertAdjacentHTML('afterbegin', taskHTML);
+            this.reset();
+        });
+    </script>
+
+</body>
+</html>

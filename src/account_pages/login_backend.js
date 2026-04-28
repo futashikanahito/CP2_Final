@@ -204,33 +204,42 @@ function exists(location, search) {
     }
     return false;
 }
+
 function add_user(username, hashed) {
     let users = json_pull('../docs/user.json');
     users[username] = hashed;
     json_dump('../docs/user.json', users);
 }
-function create_account(username, password) {
-    let name = username;
-    let pw = password;
+
+function create_account() {
+    document.getElementById('createID').addEventListener('click'); 
+    // 1. Get values from the input boxes
+    const name = document.getElementById('username').value;
+    const pword = document.getElementById('pw').value;
+    let users = json_pull('../docs/accounts.json');
+    if (!users) {
+        users = {}
+    }
     let ok = password_ok(pw);
     if (!ok) {
         return "Password does not meet requirements.";
     }
     add_user(name, hash_pw(pw));
-    return name;}
+    return name;
+}
 
-
-function login(username, password) {
+function login() {
+    document.getElementById('loginID').addEventListener('click');
+    // 1. Get values from the input boxes
+    const name = document.getElementById('username').value;
+    const pw = document.getElementById('pw').value;
     let users = json_pull('../docs/accounts.json');
     if (!users) {
         users = {}
     }
-    let name = username;
-    let pw = password;
     let hashed = hash_pw(pw)
     if (username in users && (users[name] == hashed)) {
         return true;
     }
     return false;
 }
-
