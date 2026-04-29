@@ -15,33 +15,47 @@
         <div class="s-sample-panel">
             <div class="s-sample-box">
                 <h1>WorkFlow Login</h1>
-                <script src="login_backend.js" defer></script>
 
-                    <div class="s-input-group">
-                        <label>Username</label>
-                        <input type="text" name="username" placeholder="Enter username">
-                    </div>
+                <div class="s-input-group">
+                    <label>Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter username">
+                </div>
 
-                    <div class="s-input-group">
-                        <label>Password</label>
-                        <input type="password" name="pw" placeholder="Enter password">
-                    </div>
+                <div class="s-input-group">
+                    <label>Password</label>
+                    <input type="password" id="pw" name="pw" placeholder="Enter password">
+                </div>
 
-                    <form class="s-sample-btn" type="submit">Login</form>
-                    <script>
-                        let login_result = login(username, pw);
-                        if (login_result) {
-                            // Redirect to the main page or dashboard
-                            window.location.href = "../dashboard/dashboard.html";
-                        } else {
-                            window.location.href = "../account_pages/incorrect_login.html";
-                        }
-                    </script>
+                <button class="s-sample-btn" onclick="handleLogin()">Login</button>
+
+                <p id="login-error" style="color:red; display:none;">Incorrect username or password.</p>
             </div>
         </div>
-    
+
         <!-- RIGHT SIDE (IMAGE) -->
         <div class="image-panel-login"></div>
     </div>
+
+    <script src="../front_pages/js_refrences/login_backend.js"></script>
+    <script>
+        async function handleLogin() {
+            const username = document.getElementById("username").value.trim();
+            const pw = document.getElementById("pw").value;
+
+            if (!username || !pw) {
+                document.getElementById("login-error").textContent = "Please enter both username and password.";
+                document.getElementById("login-error").style.display = "block";
+                return;
+            }
+
+            const result = await login(username, pw);
+            if (result) {
+                window.location.href = "../dashboard/dashboard.html";
+            } else {
+                document.getElementById("login-error").textContent = "Incorrect username or password.";
+                document.getElementById("login-error").style.display = "block";
+            }
+        }
+    </script>
 </body>
 </html>
