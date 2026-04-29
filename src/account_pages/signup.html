@@ -18,21 +18,69 @@
         <div class="s-sample-panel">
             <div class="s-sample-box">
                 <h1>WorkFlow Signup</h1>
-                <form action="/signup" method="POST">
-                    <div class="s-input-group">
-                        <label>Username</label>
-                        <input type="text" name="username" placeholder="Enter username">
-                    </div>
 
-                    <div class="s-input-group">
-                        <label>Password</label>
-                        <input type="password" name="pw" placeholder="Enter password">
-                    </div>
+                <div class="s-input-group">
+                    <label>Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter username">
+                </div>
 
-                    <button class="s-sample-btn" type="submit">Sign Up</button>
-                </form>
+                <div class="s-input-group">
+                    <label>Password</label>
+                    <input type="password" id="pw" name="pw" placeholder="Enter password">
+                </div>
+
+                <button class="s-sample-btn" onclick="handleSignup()">Sign Up</button>
+
+                <p id="signup-error" style="color:red; display:none;"></p>
+                <p id="signup-success" style="color:green; display:none;"></p>
             </div>
         </div>
     </div>
+
+    <script src="js_refrences/login_backend.js"></script>
+    <script>
+        async function handleSignup() {
+            const username = document.getElementById("username").value.trim();
+            const pw = document.getElementById("pw").value;
+            const errorEl = document.getElementById("signup-error");
+            const successEl = document.getElementById("signup-success");
+
+            // Reset messages
+            errorEl.style.display = "none";
+            successEl.style.display = "none";
+
+            if (!username || !pw) {
+                errorEl.textContent = "Please enter both a username and password.";
+                errorEl.style.display = "block";
+                return;
+            }
+
+            // Check if username already exists
+            const existingUsers = json_pull('accounts');
+            if (username in existingUsers) {
+                errorEl.textContent = "That username is already taken.";
+                errorEl.style.display = "block";
+                return;
+            }
+
+            const result = await create_account(username, pw);
+
+            if (result === "Password does not meet requirements.") {
+                errorEl.textContent = "Password must be 12+ characters and include uppercase, lowercase, a number, and a special character.";
+                errorEl.style.display = "block";
+            } 
+            else if (result === "Username already exists.") {
+                errorEl.textContent = "That username is already taken.";
+                errorEl.style.display = "block";
+            }
+            else {
+                successEl.textContent = "Account created! Sending to dashboard...";
+                successEl.style.display = "block";
+                setTimeout(() => {
+                    window.location.href = "../dashboard/dashboard.html";
+                }, 1500);
+            }
+        }
+    </script>
 </body>
 </html>
