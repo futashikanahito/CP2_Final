@@ -37,7 +37,7 @@
         </div>
     </div>
 
-    <script src="js_refrences/login_backend.js"></script>
+    <script src="login_backend.js"></script>
     <script>
         async function handleSignup() {
             const username = document.getElementById("username").value.trim();
@@ -45,7 +45,6 @@
             const errorEl = document.getElementById("signup-error");
             const successEl = document.getElementById("signup-success");
 
-            // Reset messages
             errorEl.style.display = "none";
             successEl.style.display = "none";
 
@@ -55,25 +54,15 @@
                 return;
             }
 
-            // Check if username already exists
-            const existingUsers = json_pull('accounts');
-            if (username in existingUsers) {
-                errorEl.textContent = "That username is already taken.";
-                errorEl.style.display = "block";
-                return;
-            }
-
             const result = await create_account(username, pw);
 
             if (result === "Password does not meet requirements.") {
-                errorEl.textContent = "Password must be 12+ characters and include uppercase, lowercase, a number, and a special character.";
+                errorEl.textContent = "Password must be 8+ characters and include uppercase, lowercase, a number, and a special character.";
                 errorEl.style.display = "block";
-            } 
-            else if (result === "Username already exists.") {
+            } else if (result === "Username already exists.") {
                 errorEl.textContent = "That username is already taken.";
                 errorEl.style.display = "block";
-            }
-            else {
+            } else {
                 successEl.textContent = "Account created! Sending to dashboard...";
                 successEl.style.display = "block";
                 setTimeout(() => {
