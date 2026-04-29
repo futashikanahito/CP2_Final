@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Calendar App</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://apis.google.com/js/api.js"></script>
+</head>
+<body>
+
+  <button id="signInBtn">Sign in with Google</button>
+  <button id="signOutBtn" style="display:none">Sign Out</button>
+
+  <div id="calendar-output"></div>
+
+  <script>
+    const CLIENT_ID = '221658919741-cdiirhu2cal9l32u99vpsbnlsi504lnr.apps.googleusercontent.com';
+    const SCOPES = 'https://www.googleapis.com/auth/calendar';
+
+    let tokenClient;
+
+    // Load the Google API client
+    gapi.load('client', async () => {
+      await gapi.client.init({
+        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
+      });
+    });
+
+    // Set up the OAuth token client
+    window.onload = () => {
+      tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: SCOPES,
+        callback: (response) => {
+          if (response.error) return console.error(response);
+          document.getElementById('signInBtn').style.display = 'none';
+          document.getElementById('signOutBtn').style.display = 'inline';
+          listEvents(); // Load calendar after sign-in
+        },
+      });
+    };
+
+    // Sign In
+    document.getElementById('signInBtn').addEventListener('click', () => {
+      tokenClient.requestAccessToken();
+    });
+
+    // Sign Out
+    document.getElementById('signOutBtn').addEventListener('click', () => {
+      google.accounts.oauth2.revoke(gapi.client.getToken().access_token, () => {
+        gapi.client.setToken(null);
+        document.getElementById('signInBtn').style.display = 'inline';
+        document.getElementById('signOutBtn').style.display = 'none';
+        document.getElementById('calendar-output').innerHTML = '';
+      });
+    });
+
+    // List upcoming events
+    async function listEvents() {
+      const response = await gapi.client.calendar.events.list({
+        calendarId: 'primary',
+        timeMin: new Date().toISOString(),
+        maxResults: 10,
+        singleEvents: true,
+        orderBy: 'startTime',
+      });
+
+      const events = response.result.items;
+      const output = document.getElementById('calendar-output');
+      output.innerHTML = '<h3>Upcoming Events</h3>';
+
+      if (!events || events.length === 0) {
+        output.innerHTML += '<p>No upcoming events.</p>';
+        return;
+      }
+
+      events.forEach(event => {
+        const start = event.start.dateTime || event.start.date;
+        output.innerHTML += `<p><strong>${event.summary}</strong> — ${start}</p>`;
+      });
+    }
+
+    // Create an event example
+    async function createEvent() {
+      await gapi.client.calendar.events.insert({
+        calendarId: 'primary',
+        resource: {
+          summary: 'New Event',
+          start: { dateTime: '2026-05-01T10:00:00', timeZone: 'America/New_York' },
+          end:   { dateTime: '2026-05-01T11:00:00', timeZone: 'America/New_York' },
+        },
+      });
+      listEvents(); // Refresh
+    }
+  </script>
+
+</body>
+</html>
