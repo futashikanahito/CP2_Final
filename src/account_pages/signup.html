@@ -28,6 +28,22 @@
                 <div class="input-group">
                     <label>Password</label>
                     <input type="password" id="pw" name="pw" placeholder="Enter password">
+                    <button onclick="togglePassword()">Show</button>
+
+                    <script>
+                        function togglePassword() {
+                        const input = document.getElementById('pw');
+                        const btn = event.target;
+                        
+                        if (input.type === 'password') {
+                        input.type = 'text';
+                        btn.textContent = 'Hide';
+                        } else {
+                        input.type = 'password';
+                        btn.textContent = 'Show';
+                        }
+                    }
+                    </script>
                 </div>
 
                 <button class="sample-btn" onclick="handleSignup()">Sign Up</button>
