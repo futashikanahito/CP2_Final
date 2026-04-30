@@ -1,37 +1,22 @@
-Core Setup & Utilities
-
-Initialize Flask app with CORS and SocketIO for real-time capabilities.
-
-load_json(path): Read JSON data from a file, returning None if the file doesn't exist.
-
-save_json(path, data): Create directory structure if needed, then write data to a JSON file.
-
-get_user(username): Retrieve user data from api/users/{username}.
-
-json.is_server_owner(username, server_id): Verify if a user is the owner of a server by checking the info file.
-
-is_server_member(username, server_id): Check if a username exists in the server's members list.
-
-Frontend Serving/: Serve index.html from the static folder.
-
-User Management/user/create: Create a new JSON user file if it doesn't already exist.
-
-/user/servers/: Return the list of servers a user belongs to.
-
-Server Management/server/create: Create a new server directory, initializes info/members/general channel, and adds it to the creator's user file.
-
-/server/delete: Verify ownership, delete the server folder, and remove the server from the owner's user file.
-
-/server/adduser: Verify ownership, add a new user to the server member list, and add the server to the new user's file.
-
-/server/channels/<server_id>: Read the channel directory and list available JSON channel files.
-
-Messaging/message/send: Verify membership, create or update a channel JSON file with new message, and emit it via SocketIO.
-
-/message/get/<server_id>/: Return the history of messages from the specific channel JSON file.
-
-Real-Time Socket Eventsjoin: Connect a user to a SocketIO room based on the server_id and channel.
-
-leave: Remove a user from the SocketIO room.
-
-Run AppStart the server on host 0.0.0.0 and port 5000 with debugging enabled.
+Start the app with real-time messaging support.
+load_json(path): Read data from a file. Return nothing if the file doesn't exist.
+save_json(path, data): Make any needed folders, then save data to a file.
+get_user(username): Get a user's data by their username.
+is_server_owner(username, server_id): Check if a user owns a server.
+is_server_member(username, server_id): Check if a user is in a server.
+Frontend /: Send the user the main webpage.
+User Management
+/user/create: Make a new user file if one doesn't already exist.
+/user/servers/: Return the list of servers a user is in.
+Server Management
+/server/create: Make a new server with a general channel and link it to the creator's account.
+/server/delete: Confirm ownership, delete the server, and unlink it from the owner's account.
+/server/adduser: Confirm ownership, add a new member to the server, and link the server to their account.
+/server/channels/<server_id>: List all channels in a server.
+Messaging
+/message/send: Confirm membership, save the message to the channel, and send it to everyone in the channel instantly.
+/message/get/<server_id>/: Return the message history for a channel.
+Real-Time Socket Events
+join: Add a user to a live channel room.
+leave: Remove a user from a live channel room.
+Run App Start the server on port 5000 with debugging on.
