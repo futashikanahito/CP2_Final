@@ -7,30 +7,30 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../styling.css" />
+    <link rel="stylesheet" href="accounts_styling.css" />
 </head>
-<body class="secondary-body">
-    <div class="s-container">
+<body>
+    <div class="container">
         <!-- LEFT SIDE (IMAGE) -->
         <div class="image-panel-signup"></div>
 
         <!-- RIGHT SIDE (SIGNUP) -->
-        <div class="s-sample-panel">
+        <div class="sample-panel">
             <button class="back-btn" onclick="location.href='../front_pages/index.html'"><</button>
-            <div class="s-sample-box">
+            <div class="sample-box">
                 <h1>WorkFlow Signup</h1>
 
-                <div class="s-input-group">
+                <div class="input-group">
                     <label>Username</label>
                     <input type="text" id="username" name="username" placeholder="Enter username">
                 </div>
 
-                <div class="s-input-group">
+                <div class="input-group">
                     <label>Password</label>
                     <input type="password" id="pw" name="pw" placeholder="Enter password">
                 </div>
 
-                <button class="s-sample-btn" onclick="handleSignup()">Sign Up</button>
+                <button class="sample-btn" onclick="handleSignup()">Sign Up</button>
 
                 <p id="signup-error" style="color:red; display:none;"></p>
                 <p id="signup-success" style="color:green; display:none;"></p>
