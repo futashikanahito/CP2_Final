@@ -109,6 +109,8 @@ function resizeWindow(e, {win, dir, startX, startY, startW, startH, startLeft, s
     if (dir === 'tl') {win.style.width = Math.max(200, startW - dx) + 'px'; win.style.left = (startLeft + dx) + 'px'; win.style.height = Math.max(150, startH - dy) + 'px'; win.style.top = (startTop + dy) + 'px'}
 }
 
-const calendarUrl = "https://calendar.google.com/calendar/embed?wkst=1&ctz=America%2FDenver&showPrint=0&src=dHJ1ZWVnZ2xlc3RvbkBnbWFpbC5jb20&src=Y2xhc3Nyb29tMTA4Mzg5MzM4NDY0MDYzNjc0Nzk3QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=YTdmMmU1NjkzMWYzYjAxNDAzNTY4MTYyNTc1OGMyOTVlYmJhM2NjZTRmMWRmYmMwNTQwNDE1OTQyZTllNmYxZkBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=ZW4udXNhI2hvbGlkYXlAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&color=%23039be5&color=%237cb342&color=%237cb342&color=%230b8043";
+function createCalendarWindow() {
+    const calendarUrl = "https://calendar.google.com/calendar/embed?wkst=1&ctz=America%2FDenver&showPrint=0&src=dHJ1ZWVnZ2xlc3RvbkBnbWFpbC5jb20&src=Y2xhc3Nyb29tMTA4Mzg5MzM4NDY0MDYzNjc0Nzk3QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=YTdmMmU1NjkzMWYzYjAxNDAzNTY4MTYyNTc1OGMyOTVlYmJhM2NjZTRmMWRmYmMwNTQwNDE1OTQyZTllNmYxZkBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=ZW4udXNhI2hvbGlkYXlAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&color=%23039be5&color=%237cb342&color=%237cb342&color=%230b8043";
 
 createWindow('My Calendar', calendarUrl);
+}
