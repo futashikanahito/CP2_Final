@@ -24,8 +24,10 @@
 
                 <div class="input-group">
                     <label>Password</label>
-                    <input type="password" id="pw" name="pw" placeholder="Enter password">
-                    <button onclick="togglePassword()">Show</button>
+                    <div class="password-wrapper">
+                        <input type="password" id="pw" name="pw" placeholder="Enter password">
+                        <button class="toggle-pw-btn" onclick="togglePassword()">Show</button>
+                    </div>
 
                     <script>
                         function togglePassword() {
