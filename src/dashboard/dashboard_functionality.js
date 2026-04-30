@@ -40,7 +40,7 @@ function createWindow(name, path) {
 
     win.innerHTML = `
         <div class="titlebar">
-            <div>${name}</div>
+            <div>${name}</div>.
             <div class="buttons">
                 <div class="btn min"></div>
                 <div class="btn max"></div>
