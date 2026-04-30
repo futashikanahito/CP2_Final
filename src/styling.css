@@ -314,6 +314,68 @@
     color: var(--white);
 }
 
+.back-btn {
+    position: fixed;
+    display: block;
+    left: 18px;
+    top: 8px;
+    width: 50px;
+    padding: 12px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    
+    background-color: var(--black);
+    color: var(--white);
+    border: 2px solid var(--secondary-black);
+
+    /* FONT STYLING */
+    font-weight: 600;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+.back-btn:hover {
+    background-color: var(--secondary-black);
+    border-color: var(--black);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    color: var(--white);
+}
+
+.back-btn-2 {
+    position: fixed;
+    display: block;
+    left: 18px;
+    top: 8px;
+    width: 50px;
+    padding: 12px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    
+    background-color: var(--black);
+    color: var(--white);
+    border: 2px solid var(--secondary-black);
+
+    /* FONT STYLING */
+    font-weight: 600;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+.back-btn-2:hover {
+    background-color: var(--secondary-black);
+    border-color: var(--black);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    color: var(--white);
+}
+
 /* Red Footer */
 .red-footer {
     text-align: center;
