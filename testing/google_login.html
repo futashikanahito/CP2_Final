@@ -158,22 +158,21 @@
   </div>
 
   <script>
-    const GOOGLE_CLIENT_ID = "497642588706-j4v9k9t4nmimat5faust63ufv1bj8.apps.googleusercontent.com";
+    const GOOGLE_CLIENT_ID = "75087933683-s5so198alkfphrc728rtjuqucggemhp0.apps.googleusercontent.com";
     const REDIRECT_URI = "https://douglas.atlast.io";
 
     function handleGoogleLogin() {
-      const params = new URLSearchParams({
-        client_id: 497642588706-j4vl9k9t4nnilmat5fsustf63ufv1bj8.apps.googleusercontent.com,
-        redirect_uri: "https://douglas.atlast.io",
-        response_type: "code",
-        scope: "trueggleston@gmail.com",
-        access_type: "offline",
-        prompt: "consent"
-      });
+    const params = new URLSearchParams({
+      client_id: GOOGLE_CLIENT_ID,
+      redirect_uri: REDIRECT_URI,
+      response_type: "code",
+      scope: "openid email profile",
+      access_type: "offline",
+      prompt: "consent"
+    });
 
-      window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
-    }
-
+    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
+  }
     function handleEmailLogin(e) {
       e.preventDefault();
       const email = document.getElementById('email').value;
