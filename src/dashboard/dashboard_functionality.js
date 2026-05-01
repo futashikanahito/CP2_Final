@@ -109,8 +109,57 @@ function resizeWindow(e, {win, dir, startX, startY, startW, startH, startLeft, s
     if (dir === 'tl') {win.style.width = Math.max(200, startW - dx) + 'px'; win.style.left = (startLeft + dx) + 'px'; win.style.height = Math.max(150, startH - dy) + 'px'; win.style.top = (startTop + dy) + 'px'}
 }
 
-function createCalendarWindow() {
+function createCalendar() {
     const calendarUrl = "https://calendar.google.com/calendar/embed?wkst=1&ctz=America%2FDenver&showPrint=0&src=dHJ1ZWVnZ2xlc3RvbkBnbWFpbC5jb20&src=Y2xhc3Nyb29tMTA4Mzg5MzM4NDY0MDYzNjc0Nzk3QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=YTdmMmU1NjkzMWYzYjAxNDAzNTY4MTYyNTc1OGMyOTVlYmJhM2NjZTRmMWRmYmMwNTQwNDE1OTQyZTllNmYxZkBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=ZW4udXNhI2hvbGlkYXlAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&color=%23039be5&color=%237cb342&color=%237cb342&color=%230b8043";
 
-createWindow('My Calendar', calendarUrl);
+    createWindow('My Calendar', calendarUrl);
 }
+
+function createSettings() {
+    const win = document.createElement('div');
+    win.className = 'window';
+    win.style.width = '95vw';
+    win.style.height = '80vw';
+    win.style.top = '50%';
+    win.style.left = '50%';
+    win.style.transform = 'translate(-50%, -50%)';
+    win.style.zIndex = zIndex++;
+
+    win.innerHTML = `
+        <div class="content">
+            <iframe src="../dashboard_content/settings.html" style="width:100%;height:100%;border:none;"></iframe>
+        </div>
+    `;
+
+    document.getElementById('desktop').appendChild(win);
+
+    function handleMessage(e) {
+        if (e.data?.type === 'close-settings') {
+            win.remove();
+            window.removeEventListener('message', handleMessage); // cleanup
+        }
+    }
+
+    window.addEventListener('message', handleMessage);
+}
+
+window.addEventListener('message', (e) => {
+    const { type, value } = e.data ?? {};
+
+    if (type === 'set-theme') {
+        const isLight = value === 'light';
+        document.body.classList.toggle('dashboard-light', isLight);
+    }
+
+    if (type === 'set-bg-color') {
+        document.body.style.background = value;
+    }
+
+    if (type === 'set-brightness') {
+        document.body.style.filter = `brightness(${value}%)`;
+    }
+
+    if (type === 'reset-bg') {
+        document.body.style.background = '';
+    }
+});

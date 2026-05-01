@@ -103,6 +103,8 @@ footer {
   font-family: inherit;
   font-weight: 500;
   font-size: medium;
+  background-color: var(--very-dark-blue);
+  color: var(--white);
 }
 
 .dropup-content {
@@ -251,8 +253,17 @@ footer {
 }
 
 .close {background: #ff0d00}
-.min   {background: #ffd000}
-.max   {background: #00ca00}
+.min {background: #ffd000}
+.max {background: #00ca00}
+.save {
+  display: flex;
+  background: #00ca00; 
+  color: var(--secondary-white); 
+  width: 50px; 
+  height: auto; 
+  border-radius: 6px;
+  justify-content: center;
+}
 
 .content {
   padding: 10px;
@@ -292,3 +303,47 @@ footer {
 .resizer.bl-corner {bottom: 0; width: 12px; height: 12px; cursor: nwse-resize}
 .resizer.tr-corner {right: 0; top: 0; width: 12px; height: 12px; cursor: nwse-resize}
 .resizer.tl-corner {left: 0; top: 0; width: 12px; height: 12px; cursor: nwse-resize}
+
+/* ---- LIGHT MODE ---- */
+body.dashboard-light {
+  color: #1a1a1a;
+  --very-dark-blue: #e2e6ed;
+  --white: #1a1a1a;
+  --lighter-blue: #2b4466;
+  --primary-color: #2b4466;
+  --primary-hover: #162840;
+  --secondary-black: #c0c8d8;
+}
+
+body.dashboard-light .window {
+  background: #dde3ec;
+}
+
+body.dashboard-light .titlebar {
+  background: #c4cdd9;
+  color: #1a1a1a;
+}
+
+body.dashboard-light .taskbar {
+  background: #c4cdd9;
+}
+
+body.dashboard-light .task {
+  background: #a8b5c6;
+  color: #1a1a1a;
+}
+
+body.dashboard-light .dropdown-content,
+body.dashboard-light .dropup-content {
+    background-color: #f0f3f7;
+}
+
+body.dashboard-light .dropdown-div,
+body.dashboard-light .dropup-div {
+  color: #1a1a1a;
+}
+
+body.dashboard-light .dropdown-div:hover,
+body.dashboard-light .dropup-div:hover {
+  background-color: #c8d3e3;
+}

@@ -16,7 +16,7 @@
                 <button class="circle"></button>
                 <div class="dropdown-content">
                     <button class="dropdown-div">Account Settings</button>
-                    <button onclick="location.href='../dashboard_content/settings.html'" class="dropdown-div">Preferences</button>
+                    <button onclick="createSettings()" class="dropdown-div">Preferences</button>
                     <button onclick="location.href='../front_pages/index.html'" class="dropdown-div">Logout</button>
                 </div>
             </div>
@@ -27,7 +27,7 @@
     <div class="dropup">
         <button class="dropbtn btn-filled">New Window</button>
         <div class="dropup-content">
-            <button onclick="createCalendarWindow('Calendar', '../dashboard_content/google_calendar.html')" class="dropup-div">New Calendar</button>
+            <button onclick="createCalendar('Calendar', '../dashboard_content/google_calendar.html')" class="dropup-div">New Calendar</button>
             <button onclick="createWindow('Video Calls')" class="dropup-div">New Video Call</button>
             <button onclick="createWindow('Chatrooms')" class="dropup-div">New Chatroom</button>
             <button onclick="createWindow('Notepad', '../dashboard_content/notepad.html')" class="dropup-div">New Notepad</button>
