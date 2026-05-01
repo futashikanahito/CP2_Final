@@ -255,15 +255,29 @@ footer {
 .close {background: #ff0d00}
 .min {background: #ffd000}
 .max {background: #00ca00}
-.save {
-  display: flex;
-  background: #00ca00; 
-  color: var(--secondary-white); 
-  width: 50px; 
-  height: auto; 
-  border-radius: 6px;
-  justify-content: center;
+
+/* Window animations */
+@keyframes win-minimize {
+    0%   { transform: scale(1);    opacity: 1; }
+    100% { transform: scale(0.5) translateY(60px); opacity: 0; }
 }
+@keyframes win-restore {
+    0%   { transform: scale(0.5) translateY(60px); opacity: 0; }
+    100% { transform: scale(1);    opacity: 1; }
+}
+@keyframes win-maximize {
+    0%   { transform: scale(0.95); opacity: 0.7; }
+    100% { transform: scale(1);    opacity: 1; }
+}
+@keyframes win-close {
+    0%   { transform: scale(1);    opacity: 1; }
+    100% { transform: scale(0.85); opacity: 0; }
+}
+
+.win-anim-minimize  { animation: win-minimize  0.2s ease-in  forwards; }
+.win-anim-restore   { animation: win-restore   0.2s ease-out forwards; }
+.win-anim-maximize  { animation: win-maximize  0.15s ease-out forwards; }
+.win-anim-close     { animation: win-close     0.18s ease-in forwards; }
 
 .content {
   padding: 10px;
@@ -314,6 +328,40 @@ footer {
 
   pointer-events: none;
   z-index: -1;
+}
+
+#taskbar-items {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.footer-task {
+  background-color: var(--lighter-blue);
+  color: var(--white);
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  user-select: none;
+  display: inline-flex;
+  padding: 6px;
+}
+
+.footer-task:hover {
+  background-color: var(--darker-blue);
+}
+
+/* Light mode variant */
+body.dashboard-light .footer-task {
+  background-color: var(--secondary-white);
+  border-color: var(--secondary-black);
+  color: var(--white);
 }
 
 /* ---- LIGHT MODE ---- */

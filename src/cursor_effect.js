@@ -5,13 +5,18 @@ let width, height;
 let cols, rows;
 let spacing = 20;
 
+let range = 8;
+let distribution = 6;
+let intensity = 2;
+let maximum = 25;
+
 let grid = [];
 
 function resize() {
     width = canvas.width = window.innerWidth;
     height = canvas.height = window.innerHeight;
 
-    cols = Math.floor(width / spacing);
+    cols = Math.floor(width / spacing) + 2;
     rows = Math.floor(height / spacing);
 
     grid = [];
@@ -28,8 +33,8 @@ function disturb(mouseX, mouseY) {
     let col = Math.floor(mouseX / spacing);
     let row = Math.floor(mouseY / spacing);
 
-    for (let dx = -8; dx <= 8; dx++) {
-        for (let dy = -8; dy <= 8; dy++) {
+    for (let dx = -range; dx <= range; dx++) {
+        for (let dy = -range; dy <= range; dy++) {
             let nx = col + dx;
             let ny = row + dy;
 
@@ -37,10 +42,10 @@ function disturb(mouseX, mouseY) {
                 let index = nx + ny * cols;
 
                 let dist = Math.sqrt(dx * dx + dy * dy);
-                let influence = Math.max(0, 1 - dist / 6);
+                let influence = Math.max(0, 1 - dist / distribution);
 
-                grid[index] += influence * 2;
-                grid[index] = Math.min(grid[index], 8);
+                grid[index] += influence * intensity;
+                grid[index] = Math.min(grid[index], maximum);
             }
         }
     }
@@ -106,10 +111,31 @@ function draw() {
     }
 }
 
+window.addEventListener('message', (event) => {
+    const { type, value } = event.data;
+
+    switch (type) {
+        case 'ce-range':
+            range = value;
+            break;
+        case 'ce-distribution':
+            distribution = value;
+            break;
+        case 'ce-intensity':
+            intensity = value;
+            break;
+        case 'ce-maximum':
+            maximum = value;
+            break;
+    }
+});
+
 function animate() {
     update();
     draw();
     requestAnimationFrame(animate);
 }
+
+
 
 animate();

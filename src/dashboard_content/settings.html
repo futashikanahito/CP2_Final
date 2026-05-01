@@ -156,6 +156,26 @@
                 </div>
 
                 <div class="setting-group">
+                    <label for="brightness-slider">Cursor Effect Range</label>
+                    <input type="range" id="ce-range" min="1" max="25" value="8">
+                </div>
+
+                <div class="setting-group">
+                    <label for="brightness-slider">Cursor Effect Distribution</label>
+                    <input type="range" id="ce-distribution" min="5" max="15" value="6">
+                </div>
+
+                <div class="setting-group">
+                    <label for="brightness-slider">Cursor Effect Intensity</label>
+                    <input type="range" id="ce-intensity" min=".25" max="3" step=".001" value="2">
+                </div>
+
+                <div class="setting-group">
+                    <label for="brightness-slider">Cursor Effect Maximum Size</label>
+                    <input type="range" id="ce-maximum" min="1" max="25" value="25">
+                </div>
+
+                <div class="setting-group">
                     <button id="save-btn">Save</button>
                 </div>
             </div>
@@ -171,6 +191,23 @@
         function send(type, value) {
             window.parent.postMessage({ type, value }, '*');
         }
+
+        const sliders = [
+            ['ce-range', 'ce-range', 'ce-range'],
+            ['ce-distribution', 'ce-distribution', 'ce-distribution'],
+            ['ce-intensity', 'ce-intensity', 'ce-intensity'],
+            ['ce-maximum', 'ce-maximum', 'ce-maximum'],
+            ['brightness-slider', 'brightness', 'set-brightness'],
+        ];
+
+        sliders.forEach(([id, storageKey, type]) => {
+            const saved = localStorage.getItem(storageKey);
+            if (saved !== null) {
+                const el = document.getElementById(id);
+                el.value = saved;
+                send(type, parseFloat(saved));
+            }
+        });
 
         // 1. Light/Light Mode Toggle
         let dashboardIsLight = false;
@@ -194,6 +231,7 @@
 
         // 3. Brightness Control
         brightnessSlider.addEventListener('input', (e) => {
+            localStorage.setItem('brightness', e.target.value);
             document.body.style.filter = `brightness(${e.target.value}%)`;
             send('set-brightness', e.target.value);
         });
@@ -203,8 +241,33 @@
             window.parent.postMessage({ type: 'close-settings' }, '*');
         });
 
+        // 5. Reset Preferences
         document.getElementById('reset-bg-btn').addEventListener('click', () => {
             send('reset-bg', null);
+        });
+
+        // 6. Cursor Effect Range
+        document.getElementById('ce-range').addEventListener('input', (e) => {
+            localStorage.setItem('ce-range', e.target.value);
+            send('ce-range', parseFloat(e.target.value));
+        });
+
+        // 7. Cursor Effect Distribution
+        document.getElementById('ce-distribution').addEventListener('input', (e) => {
+            localStorage.setItem('ce-distribution', e.target.value);
+            send('ce-distribution', parseFloat(e.target.value));
+        });
+
+        // 8. Cursor Effect Intensity
+        document.getElementById('ce-intensity').addEventListener('input', (e) => {
+            localStorage.setItem('ce-intensity', e.target.value);
+            send('ce-intensity', parseFloat(e.target.value));
+        });
+
+        // 9. Cursor Effect Maximum
+        document.getElementById('ce-maximum').addEventListener('input', (e) => {
+            localStorage.setItem('ce-maximum', e.target.value);
+            send('ce-maximum', parseFloat(e.target.value));
         });
     </script>
 </body>

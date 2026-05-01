@@ -14,6 +14,14 @@ function unshieldIframes() {
     });
 }
 
+function animateWindow(win, animClass, onComplete) {
+    win.classList.add(animClass);
+    win.addEventListener('animationend', () => {
+        win.classList.remove(animClass);
+        if (onComplete) onComplete();
+    }, { once: true });
+}
+
 document.addEventListener('mousemove', (e) => {
     if (activeDrag) {
         const {win, offsetX, offsetY} = activeDrag;
@@ -42,8 +50,8 @@ function createWindow(name, path) {
         <div class="titlebar">
             <div>${name}</div>.
             <div class="buttons">
-                <div class="btn min"></div>
                 <div class="btn max"></div>
+                <div class="btn min"></div>
                 <div class="btn close"></div>
             </div>
         </div>
@@ -69,13 +77,43 @@ function createWindow(name, path) {
         activeDrag = {win, offsetX: e.clientX - win.offsetLeft, offsetY: e.clientY - win.offsetTop};
     });
 
-    win.querySelector('.close').onclick = () => win.remove();
-    win.querySelector('.min').onclick = () => win.style.display = 'none';
+    // CLOSE
+    win.querySelector('.close').onclick = () => {
+        animateWindow(win, 'win-anim-close', () => win.remove());
+    };
+
+    // MINIMIZE
+    win.querySelector('.min').onclick = () => {
+        animateWindow(win, 'win-anim-minimize', () => {
+            win.style.display = 'none';
+            win.classList.remove('win-anim-minimize');
+
+            const chip = document.createElement('span');
+            chip.textContent = name;
+            chip.className = 'footer-task';
+            chip.title = `Click to restore "${name}"`;
+            chip.onclick = () => {
+                win.style.display = '';
+                animateWindow(win, 'win-anim-restore', null);
+                chip.remove();
+
+                if (document.getElementById('taskbar-items').children.length === 0) {
+                    document.getElementById('footer-copyright').style.display = '';
+                }
+            };
+
+            document.getElementById('taskbar-items').appendChild(chip);
+            document.getElementById('footer-copyright').style.display = 'none';
+        });
+    };
+
+    // MAXIMIZE
     win.querySelector('.max').onclick = () => {
         win.style.width = '100vw';
         win.style.height = 'calc(100vh - 40px)';
         win.style.top = '0';
         win.style.left = '0';
+        animateWindow(win, 'win-anim-maximize', null);
     };
 
     function initResize(dir, e) {
