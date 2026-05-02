@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Chat Test t3 - Final Fix</title>
+    <title>Chat Test t13</title>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <audio id="ping" src="https://www.soundjay.com/buttons/sounds/button-09.mp3" preload="auto"></audio>
     <style>
         body { font-family: monospace; background: #1e1e1e; color: #ccc; padding: 20px; }
         input, button, select { background: #2e2e2e; color: #ccc; border: 1px solid #444; padding: 6px 10px; margin: 4px; }
@@ -15,6 +16,10 @@
         .stat { margin: 4px 0; font-size: 0.9em; }
         .dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 10px; background: grey; }
         .ok { background: #4caf50; } .err { background: #f44336; } .wait { background: #ff9800; }
+        #gif-picker { display: none; background: #252525; border: 1px solid #444; padding: 8px; margin: 4px 0; max-height: 200px; overflow-y: auto; }
+        #gif-picker img { width: 120px; height: 80px; object-fit: cover; cursor: pointer; margin: 2px; }
+        #gif-picker img:hover { outline: 2px solid #4caf50; }
+        .chat-gif { max-width: 200px; max-height: 150px; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -48,7 +53,8 @@
         <select id="chat-server-id" onchange="loadChannels()"><option value="">select server</option></select>
         <select id="chat-channel" onchange="openChannel()"><option value="">select channel</option></select>
         <div id="chat"></div>
-        <input id="message-input" type="text" placeholder="type a message">
+        <div id="gif-picker"></div>
+        <input id="message-input" type="text" placeholder="type a message or /gif cats">
         <button onclick="sendMessage()">send</button>
     </div>
 
@@ -60,9 +66,11 @@
     </div>
 
 <script>
-    const BASE = '/api'; 
+    const BASE = '/api';
+    const KLIPY_KEY = 's8odzNYngyB2TQFkGjoRBldhynfFTJcVca9p9T5YGxsSQkhuqB0n7u1MfL7sBdqW';
     let currentUser = '', currentServer = '', currentChannel = '', jitsiApi = null;
     let socket = null;
+    let gifSearchTimeout = null;
 
     function initSocket() {
         if (typeof io !== 'undefined') {
@@ -70,7 +78,6 @@
                 path: "/socket.io",
                 transports: ["websocket"],
             });
-
             socket.on('connect', () => setStat('socket', 'Connected', 'ok'));
             socket.on('connect_error', (e) => setStat('socket', 'Error: ' + e.message, 'err'));
         } else {
@@ -136,34 +143,90 @@
         const sid = document.getElementById('chat-server-id').value;
         const chan = document.getElementById('chat-channel').value;
         if (!sid || !chan) return;
-
         if (socket && currentServer && currentChannel) {
             socket.emit('leave', {server_id: currentServer, channel: currentChannel});
         }
-
         currentServer = sid;
         currentChannel = chan;
         if (socket) socket.emit('join', {server_id: sid, channel: chan});
-
         const url = (BASE + `/message/get/${sid}/${chan}`).replace(/\/+/g, '/');
         const messages = await (await fetch(url)).json();
         const chat = document.getElementById('chat');
         chat.innerHTML = '';
-        messages.forEach(m => chat.innerHTML += `<div><strong>${m.id}:</strong> ${m.message}</div>`);
+        messages.forEach(m => renderMessage(m));
         chat.scrollTop = chat.scrollHeight;
     }
 
-    function joinCall() {
-    if (!currentServer || !currentChannel) { alert("Join a channel first"); return; }
-    setStat('video', 'Joining...', 'wait');
-    const room = `ChatApp_${currentServer}_${currentChannel}`;
-    document.getElementById('meet').innerHTML = `
-        <iframe src="https://meet.douglas.atlast.io/${room}"
-            allow="camera; microphone; fullscreen; display-capture"
-            style="width:100%; height:400px; border:none;">
-        </iframe>`;
-    setStat('video', 'Live', 'ok');
+    function renderMessage(m) {
+        const chat = document.getElementById('chat');
+        if (m.message.startsWith('__GIF__')) {
+            const url = m.message.replace('__GIF__', '');
+            chat.innerHTML += `<div><strong>${m.id}:</strong> <img src="${url}" class="chat-gif"></div>`;
+        } else {
+            chat.innerHTML += `<div><strong>${m.id}:</strong> ${m.message}</div>`;
+        }
     }
+
+    async function searchGifs(query) {
+    const picker = document.getElementById('gif-picker');
+    if (!query) { picker.style.display = 'none'; return; }
+    try {
+        const r = await fetch(`https://api.klipy.com/api/v1/${KLIPY_KEY}/gifs/search?q=${encodeURIComponent(query)}&per_page=12`);
+        const data = await r.json();
+        console.log('Klipy response:', data);
+        picker.style.display = 'block';
+        picker.innerHTML = '';
+        data.data.data.forEach(gif => {
+        const img = document.createElement('img');
+        img.src = gif.file.sm.gif.url;
+        img.onclick = () => sendGif(gif.file.hd.gif.url);
+        picker.appendChild(img);
+    });
+    } catch(e) { console.error('GIF search failed', e); }
+}
+
+    async function sendGif(url) {
+        document.getElementById('gif-picker').style.display = 'none';
+        document.getElementById('message-input').value = '';
+        const apiUrl = (BASE + '/message/send').replace(/\/+/g, '/');
+        await fetch(apiUrl, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ username: currentUser, server_id: currentServer, channel: currentChannel, msg: `__GIF__${url}` })
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('message-input').addEventListener('input', (e) => {
+            const val = e.target.value;
+            if (val.startsWith('/gif ')) {
+                const query = val.slice(5).trim();
+                clearTimeout(gifSearchTimeout);
+                gifSearchTimeout = setTimeout(() => searchGifs(query), 400);
+            } else {
+                document.getElementById('gif-picker').style.display = 'none';
+            }
+        });
+
+        document.getElementById('message-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('gif-picker').style.display = 'none';
+            }
+        });
+    });
+
+    function joinCall() {
+        if (!currentServer || !currentChannel) { alert("Join a channel first"); return; }
+        setStat('video', 'Joining...', 'wait');
+        const room = `ChatApp_${currentServer}_${currentChannel}`;
+        document.getElementById('meet').innerHTML = `
+            <iframe src="https://meet.douglas.atlast.io/${room}"
+                allow="camera; microphone; fullscreen; display-capture"
+                style="width:100%; height:400px; border:none;">
+            </iframe>`;
+        setStat('video', 'Live', 'ok');
+    }
+
     function leaveCall() {
         document.getElementById('meet').innerHTML = '';
         setStat('video', 'Left', 'wait');
@@ -173,6 +236,7 @@
         const input = document.getElementById('message-input');
         const msg = input.value.trim();
         if (!msg || !currentServer || !currentChannel) return;
+        if (msg.startsWith('/gif')) { return; }
         const url = (BASE + '/message/send').replace(/\/+/g, '/');
         await fetch(url, {
             method: 'POST',
@@ -185,12 +249,13 @@
     window.onload = () => {
         initSocket();
         socket.on('new-message', (msg) => {
+            renderMessage(msg);
             const chat = document.getElementById('chat');
-            chat.innerHTML += `<div><strong>${msg.id}:</strong> ${msg.message}</div>`;
             chat.scrollTop = chat.scrollHeight;
         });
         runDiagnostics();
     };
+
     const GOOGLE_CLIENT_ID = "75087933683-s5so198alkfphrc728rtjuqucggemhp0.apps.googleusercontent.com";
 
     function handleGoogleLogin() {
