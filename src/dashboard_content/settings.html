@@ -136,8 +136,10 @@
             <h1>Preferences</h1>
 
             <div class="settings-content">
+                <h2>Appearance</h2>
+
                 <div class="setting-group">
-                    <label>Appearance</label>
+                    <label>Light/Dark Mode</label>
                     <button id="theme-btn">Enable Light Mode</button>
                 </div>
 
@@ -154,25 +156,31 @@
                 <div class="setting-group">
                     <button id="reset-bg-btn">Reset Background Image</button>
                 </div>
+                
+                <h2>Cursor Effects</h2>
 
                 <div class="setting-group">
-                    <label for="brightness-slider">Cursor Effect Range</label>
+                    <label>Cursor Effect Range</label>
                     <input type="range" id="ce-range" min="1" max="25" value="8">
                 </div>
 
                 <div class="setting-group">
-                    <label for="brightness-slider">Cursor Effect Distribution</label>
+                    <label>Cursor Effect Distribution</label>
                     <input type="range" id="ce-distribution" min="5" max="15" value="6">
                 </div>
 
                 <div class="setting-group">
-                    <label for="brightness-slider">Cursor Effect Intensity</label>
+                    <label>Cursor Effect Intensity</label>
                     <input type="range" id="ce-intensity" min=".25" max="3" step=".001" value="2">
                 </div>
 
                 <div class="setting-group">
-                    <label for="brightness-slider">Cursor Effect Maximum Size</label>
+                    <label>Cursor Effect Maximum Size</label>
                     <input type="range" id="ce-maximum" min="1" max="25" value="25">
+                </div>
+
+                <div class="setting-group">
+                    <button id="ce-reset">Reset Cursor Effects</button>
                 </div>
 
                 <div class="setting-group">
@@ -268,6 +276,18 @@
         document.getElementById('ce-maximum').addEventListener('input', (e) => {
             localStorage.setItem('ce-maximum', e.target.value);
             send('ce-maximum', parseFloat(e.target.value));
+        });
+
+        // 10. Reset Cursor Effects
+        document.getElementById('ce-reset').addEventListener('click', () => {
+            localStorage.setItem('ce-range', 8);
+            localStorage.setItem('ce-distribution', 6);
+            localStorage.setItem('ce-intensity', 2);
+            localStorage.setItem('ce-maximum', 25);
+            send('ce-range', 8);
+            send('ce-distribution', 6);
+            send('ce-intensity', 2);
+            send('ce-maximum', 25);
         });
     </script>
 </body>

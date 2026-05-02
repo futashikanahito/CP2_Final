@@ -37,7 +37,6 @@ body {
   overflow: hidden;
 }
 
-/* Nav */
 nav {
   background-color: var(--very-dark-blue);
   padding: 1rem 2.5%;
@@ -111,11 +110,11 @@ footer {
   position: absolute;
   bottom: 100%;
   left: 50%;
-  min-width: 180px;
+  min-width: 200px;
   background-color: var(--very-dark-blue);
   border: 2px solid var(--lighter-blue);
   border-radius: 12px;
-  padding: 8px;
+  padding: 10px;
   margin-bottom: 15px;
   opacity: 0;
   visibility: hidden;
@@ -258,26 +257,26 @@ footer {
 
 /* Window animations */
 @keyframes win-minimize {
-    0%   { transform: scale(1);    opacity: 1; }
-    100% { transform: scale(0.5) translateY(60px); opacity: 0; }
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.5) translateY(60px); opacity: 0; }
 }
 @keyframes win-restore {
-    0%   { transform: scale(0.5) translateY(60px); opacity: 0; }
-    100% { transform: scale(1);    opacity: 1; }
+  0% { transform: scale(0.5) translateY(60px); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 @keyframes win-maximize {
-    0%   { transform: scale(0.95); opacity: 0.7; }
-    100% { transform: scale(1);    opacity: 1; }
+  0% { transform: scale(0.95); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
 }
 @keyframes win-close {
-    0%   { transform: scale(1);    opacity: 1; }
-    100% { transform: scale(0.85); opacity: 0; }
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.85); opacity: 0; }
 }
 
-.win-anim-minimize  { animation: win-minimize  0.2s ease-in  forwards; }
-.win-anim-restore   { animation: win-restore   0.2s ease-out forwards; }
-.win-anim-maximize  { animation: win-maximize  0.15s ease-out forwards; }
-.win-anim-close     { animation: win-close     0.18s ease-in forwards; }
+.win-anim-minimize { animation: win-minimize 0.2s ease-in  forwards; }
+.win-anim-restore { animation: win-restore 0.2s ease-out forwards; }
+.win-anim-maximize { animation: win-maximize 0.15s ease-out forwards; }
+.win-anim-close { animation: win-close 0.18s ease-in forwards; }
 
 .content {
   padding: 10px;
@@ -334,15 +333,14 @@ footer {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 6px;
-  margin-top: 6px;
+  gap: 10px;
 }
 
 .footer-task {
   background-color: var(--lighter-blue);
   color: var(--white);
   width: 50px;
-  height: 50px;
+  height: 30px;
   border-radius: 8px;
   font-size: 0.78rem;
   font-weight: 500;
@@ -350,7 +348,10 @@ footer {
   transition: background 0.2s ease;
   user-select: none;
   display: inline-flex;
-  padding: 6px;
+  padding: 10px;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
 }
 
 .footer-task:hover {

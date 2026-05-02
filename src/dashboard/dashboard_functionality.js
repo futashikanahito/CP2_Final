@@ -110,7 +110,7 @@ function createWindow(name, path) {
     // MAXIMIZE
     win.querySelector('.max').onclick = () => {
         win.style.width = '100vw';
-        win.style.height = 'calc(100vh - 40px)';
+        win.style.height = 'calc(80vh)';
         win.style.top = '0';
         win.style.left = '0';
         animateWindow(win, 'win-anim-maximize', null);
@@ -157,7 +157,7 @@ function createSettings() {
     const win = document.createElement('div');
     win.className = 'window';
     win.style.width = '95vw';
-    win.style.height = '80vw';
+    win.style.height = 'min(80vw, 80vh)';
     win.style.top = '50%';
     win.style.left = '50%';
     win.style.transform = 'translate(-50%, -50%)';
