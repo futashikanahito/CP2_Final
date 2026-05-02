@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Chat Test t13</title>
+    <title>Chat Test t14</title>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-    <audio id="ping" src="https://www.soundjay.com/buttons/sounds/button-09.mp3" preload="auto"></audio>
+    <audio id="ping" src="/ping.mp3" preload="auto"></audio>
     <style>
         body { font-family: monospace; background: #1e1e1e; color: #ccc; padding: 20px; }
         input, button, select { background: #2e2e2e; color: #ccc; border: 1px solid #444; padding: 6px 10px; margin: 4px; }
@@ -102,6 +102,8 @@
     }
 
     async function login() {
+        const ping = document.getElementById('ping');
+        ping.play().then(() => ping.pause()).catch(() => {});
         const username = document.getElementById('username').value.trim();
         if (!username) return;
         currentUser = username;
@@ -248,11 +250,12 @@
 
     window.onload = () => {
         initSocket();
-        socket.on('new-message', (msg) => {
-            renderMessage(msg);
-            const chat = document.getElementById('chat');
-            chat.scrollTop = chat.scrollHeight;
-        });
+    socket.on('new-message', (msg) => {
+        renderMessage(msg);
+        const chat = document.getElementById('chat');
+        chat.scrollTop = chat.scrollHeight;
+        if (msg.id !== currentUser) document.getElementById('ping').play();
+    });
         runDiagnostics();
     };
 
