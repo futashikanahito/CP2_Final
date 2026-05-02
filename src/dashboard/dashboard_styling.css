@@ -37,7 +37,6 @@ body {
   overflow: hidden;
 }
 
-/* Nav */
 nav {
   background-color: var(--very-dark-blue);
   padding: 1rem 2.5%;
@@ -103,17 +102,19 @@ footer {
   font-family: inherit;
   font-weight: 500;
   font-size: medium;
+  background-color: var(--very-dark-blue);
+  color: var(--white);
 }
 
 .dropup-content {
   position: absolute;
   bottom: 100%;
   left: 50%;
-  min-width: 180px;
+  min-width: 200px;
   background-color: var(--very-dark-blue);
   border: 2px solid var(--lighter-blue);
   border-radius: 12px;
-  padding: 8px;
+  padding: 10px;
   margin-bottom: 15px;
   opacity: 0;
   visibility: hidden;
@@ -251,8 +252,31 @@ footer {
 }
 
 .close {background: #ff0d00}
-.min   {background: #ffd000}
-.max   {background: #00ca00}
+.min {background: #ffd000}
+.max {background: #00ca00}
+
+/* Window animations */
+@keyframes win-minimize {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.5) translateY(60px); opacity: 0; }
+}
+@keyframes win-restore {
+  0% { transform: scale(0.5) translateY(60px); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes win-maximize {
+  0% { transform: scale(0.95); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes win-close {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.85); opacity: 0; }
+}
+
+.win-anim-minimize { animation: win-minimize 0.2s ease-in  forwards; }
+.win-anim-restore { animation: win-restore 0.2s ease-out forwards; }
+.win-anim-maximize { animation: win-maximize 0.15s ease-out forwards; }
+.win-anim-close { animation: win-close 0.18s ease-in forwards; }
 
 .content {
   padding: 10px;
@@ -292,3 +316,95 @@ footer {
 .resizer.bl-corner {bottom: 0; width: 12px; height: 12px; cursor: nwse-resize}
 .resizer.tr-corner {right: 0; top: 0; width: 12px; height: 12px; cursor: nwse-resize}
 .resizer.tl-corner {left: 0; top: 0; width: 12px; height: 12px; cursor: nwse-resize}
+
+/* Cursor Effect */
+#waveCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+
+  pointer-events: none;
+  z-index: -1;
+}
+
+#taskbar-items {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.footer-task {
+  background-color: var(--lighter-blue);
+  color: var(--white);
+  width: 50px;
+  height: 30px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  user-select: none;
+  display: inline-flex;
+  padding: 10px;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-task:hover {
+  background-color: var(--darker-blue);
+}
+
+/* Light mode variant */
+body.dashboard-light .footer-task {
+  background-color: var(--secondary-white);
+  border-color: var(--secondary-black);
+  color: var(--white);
+}
+
+/* ---- LIGHT MODE ---- */
+body.dashboard-light {
+  color: #1a1a1a;
+  --very-dark-blue: #e2e6ed;
+  --white: #1a1a1a;
+  --lighter-blue: #2b4466;
+  --primary-color: #2b4466;
+  --primary-hover: #162840;
+  --secondary-black: #c0c8d8;
+}
+
+body.dashboard-light .window {
+  background: #dde3ec;
+}
+
+body.dashboard-light .titlebar {
+  background: #c4cdd9;
+  color: #1a1a1a;
+}
+
+body.dashboard-light .taskbar {
+  background: #c4cdd9;
+}
+
+body.dashboard-light .task {
+  background: #a8b5c6;
+  color: #1a1a1a;
+}
+
+body.dashboard-light .dropdown-content,
+body.dashboard-light .dropup-content {
+    background-color: #f0f3f7;
+}
+
+body.dashboard-light .dropdown-div,
+body.dashboard-light .dropup-div {
+  color: #1a1a1a;
+}
+
+body.dashboard-light .dropdown-div:hover,
+body.dashboard-light .dropup-div:hover {
+  background-color: #c8d3e3;
+}

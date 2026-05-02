@@ -11,7 +11,7 @@
             --text-color: #333333;
             --panel-bg: #f4f4f5;
             --border-color: #e4e4e7;
-            --button-bg: #007bff;
+            --button-bg: #70b5ff;
             --button-text: #ffffff;
         }
 
@@ -21,7 +21,7 @@
             --text-color: #f4f4f5;
             --panel-bg: #1e1e1e;
             --border-color: #333333;
-            --button-bg: #3b82f6;
+            --button-bg: #f28d00;
         }
 
         body {
@@ -49,11 +49,16 @@
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 2rem;
+            padding: 0;
             width: 100%;
             max-width: 500px;
+            max-height: 70vh;
+            overflow-y: auto;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .settings-content {
+            padding: 2rem;
         }
 
         .settings-panel h1 {
@@ -62,6 +67,14 @@
             font-size: 1.8rem;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 0.5rem;
+
+            position: sticky;
+            top: 0;
+            background-color: var(--panel-bg);
+            z-index: 10;
+            margin: 0;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .setting-group {
@@ -120,67 +133,161 @@
 
     <main>
         <div class="settings-panel">
-            <h1>Settings</h1>
+            <h1>Preferences</h1>
 
-            <div class="setting-group">
-                <label>Appearance</label>
-                <button id="theme-btn">Enable Dark Mode</button>
-            </div>
+            <div class="settings-content">
+                <h2>Appearance</h2>
 
-            <div class="setting-group">
-                <label for="bg-picker">Custom Background Color</label>
-                <input type="color" id="bg-picker" value="#ffffff">
-            </div>
+                <div class="setting-group">
+                    <label>Light/Dark Mode</label>
+                    <button id="theme-btn">Enable Light Mode</button>
+                </div>
 
-            <div class="setting-group">
-                <label for="brightness-slider">Brightness</label>
-                <input type="range" id="brightness-slider" min="30" max="150" value="100">
-            </div>
+                <div class="setting-group">
+                    <label for="bg-picker">Custom Background Color</label>
+                    <input type="color" id="bg-picker" value="#ffffff">
+                </div>
 
-            <div class="setting-group">
-                <button onclick="location.href='../dashboard/dashboard.html'">Dashboard</button>
+                <div class="setting-group">
+                    <label for="brightness-slider">UI Brightness</label>
+                    <input type="range" id="brightness-slider" min="50" max="150" value="100">
+                </div>
+
+                <div class="setting-group">
+                    <button id="reset-bg-btn">Reset Background Image</button>
+                </div>
+                
+                <h2>Cursor Effects</h2>
+
+                <div class="setting-group">
+                    <label>Cursor Effect Range</label>
+                    <input type="range" id="ce-range" min="1" max="25" value="8">
+                </div>
+
+                <div class="setting-group">
+                    <label>Cursor Effect Distribution</label>
+                    <input type="range" id="ce-distribution" min="5" max="15" value="6">
+                </div>
+
+                <div class="setting-group">
+                    <label>Cursor Effect Intensity</label>
+                    <input type="range" id="ce-intensity" min=".25" max="3" step=".001" value="2">
+                </div>
+
+                <div class="setting-group">
+                    <label>Cursor Effect Maximum Size</label>
+                    <input type="range" id="ce-maximum" min="1" max="25" value="25">
+                </div>
+
+                <div class="setting-group">
+                    <button id="ce-reset">Reset Cursor Effects</button>
+                </div>
+
+                <div class="setting-group">
+                    <button id="save-btn">Save</button>
+                </div>
             </div>
         </div>
     </main>
 
-    <footer class="primary-footer">
-        <p>&copy; 2026 WorkFlow. No rights reserved.</p>
-    </footer>
-
     <script>
-        // Grab our elements from the DOM
         const themeBtn = document.getElementById('theme-btn');
         const bgPicker = document.getElementById('bg-picker');
         const brightnessSlider = document.getElementById('brightness-slider');
         const root = document.documentElement;
 
-        // 1. Light/Dark Mode Toggle
-        themeBtn.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            
-            if (document.body.classList.contains('dark-mode')) {
-                themeBtn.textContent = 'Enable Light Mode';
-                // Reset the color picker to a dark default so it matches the theme
-                bgPicker.value = '#121212';
-                root.style.setProperty('--bg-color', '#121212');
-            } else {
-                themeBtn.textContent = 'Enable Dark Mode';
-                // Reset the color picker to a light default
-                bgPicker.value = '#ffffff';
-                root.style.setProperty('--bg-color', '#ffffff');
+        function send(type, value) {
+            window.parent.postMessage({ type, value }, '*');
+        }
+
+        const sliders = [
+            ['ce-range', 'ce-range', 'ce-range'],
+            ['ce-distribution', 'ce-distribution', 'ce-distribution'],
+            ['ce-intensity', 'ce-intensity', 'ce-intensity'],
+            ['ce-maximum', 'ce-maximum', 'ce-maximum'],
+            ['brightness-slider', 'brightness', 'set-brightness'],
+        ];
+
+        sliders.forEach(([id, storageKey, type]) => {
+            const saved = localStorage.getItem(storageKey);
+            if (saved !== null) {
+                const el = document.getElementById(id);
+                el.value = saved;
+                send(type, parseFloat(saved));
             }
         });
 
-        // 2. Custom Background Color
-        bgPicker.addEventListener('input', (event) => {
-            // Overrides the CSS variable to instantly change the background
-            root.style.setProperty('--bg-color', event.target.value);
+        // 1. Light/Light Mode Toggle
+        let dashboardIsLight = false;
+
+        themeBtn.addEventListener('click', () => {
+            dashboardIsLight = !dashboardIsLight;
+            themeBtn.textContent = dashboardIsLight ? 'Enable Dark Mode' : 'Enable Light Mode';
+            send('set-theme', dashboardIsLight ? 'light' : 'dark');
+
+            document.body.classList.toggle('dark-mode', !dashboardIsLight);
+            const bg = dashboardIsLight ? '#ffffff' : '#121212';
+            bgPicker.value = bg;
+            document.documentElement.style.setProperty('--bg-color', bg);
+        });
+
+        // 2. Custom Background Color 
+        bgPicker.addEventListener('input', (e) => {
+            root.style.setProperty('--bg-color', e.target.value);
+            send('set-bg-color', e.target.value);
         });
 
         // 3. Brightness Control
-        brightnessSlider.addEventListener('input', (event) => {
-            // Uses the CSS filter property to dim or brighten the entire page
-            document.body.style.filter = `brightness(${event.target.value}%)`;
+        brightnessSlider.addEventListener('input', (e) => {
+            localStorage.setItem('brightness', e.target.value);
+            document.body.style.filter = `brightness(${e.target.value}%)`;
+            send('set-brightness', e.target.value);
+        });
+
+        // 4. Save = close
+        document.getElementById('save-btn').addEventListener('click', () => {
+            window.parent.postMessage({ type: 'close-settings' }, '*');
+        });
+
+        // 5. Reset Preferences
+        document.getElementById('reset-bg-btn').addEventListener('click', () => {
+            send('reset-bg', null);
+        });
+
+        // 6. Cursor Effect Range
+        document.getElementById('ce-range').addEventListener('input', (e) => {
+            localStorage.setItem('ce-range', e.target.value);
+            send('ce-range', parseFloat(e.target.value));
+        });
+
+        // 7. Cursor Effect Distribution
+        document.getElementById('ce-distribution').addEventListener('input', (e) => {
+            localStorage.setItem('ce-distribution', e.target.value);
+            send('ce-distribution', parseFloat(e.target.value));
+        });
+
+        // 8. Cursor Effect Intensity
+        document.getElementById('ce-intensity').addEventListener('input', (e) => {
+            localStorage.setItem('ce-intensity', e.target.value);
+            send('ce-intensity', parseFloat(e.target.value));
+        });
+
+        // 9. Cursor Effect Maximum
+        document.getElementById('ce-maximum').addEventListener('input', (e) => {
+            localStorage.setItem('ce-maximum', e.target.value);
+            send('ce-maximum', parseFloat(e.target.value));
+        });
+
+        // 10. Reset Cursor Effects
+        document.getElementById('ce-reset').addEventListener('click', () => {
+            localStorage.setItem('ce-range', 8);
+            localStorage.setItem('ce-distribution', 6);
+            localStorage.setItem('ce-intensity', 2);
+            localStorage.setItem('ce-maximum', 25);
+            send('ce-range', 8);
+            send('ce-distribution', 6);
+            send('ce-intensity', 2);
+            send('ce-maximum', 25);
         });
     </script>
 </body>

@@ -16,29 +16,35 @@
                 <button class="circle"></button>
                 <div class="dropdown-content">
                     <button class="dropdown-div">Account Settings</button>
-                    <button onclick="location.href='../dashboard_content/settings.html'" class="dropdown-div">Preferences</button>
+                    <button onclick="createSettings()" class="dropdown-div">Preferences</button>
                     <button onclick="location.href='../front_pages/index.html'" class="dropdown-div">Logout</button>
                 </div>
             </div>
         </div>
     </nav>
 
+    <canvas id="waveCanvas"></canvas>
+
     <div id="desktop"></div>
     <div class="dropup">
         <button class="dropbtn btn-filled">New Window</button>
         <div class="dropup-content">
-            <button onclick="createCalendarWindow('Calendar', '../dashboard_content/google_calendar.html')" class="dropup-div">New Calendar</button>
-            <button onclick="createWindow('Video Calls')" class="dropup-div">New Video Call</button>
-            <button onclick="createWindow('Chatrooms')" class="dropup-div">New Chatroom</button>
+            <button onclick="createCalendar('Calendar', '../dashboard_content/google_calendar.html')" class="dropup-div">New Calendar</button>
+            <button onclick="createWindow('Video Calls', '../dashboard_content/video_calling.html')" class="dropup-div">New Video Call</button>
+            <button onclick="createWindow('Chatrooms', '../dashboard_content/chats.html')" class="dropup-div">New Chatroom</button>
             <button onclick="createWindow('Notepad', '../dashboard_content/notepad.html')" class="dropup-div">New Notepad</button>
+            <button onclick="createWindow('Notepad', '../dashboard_content/announcements.html')" class="dropup-div">New Announcements</button>
+            <button onclick="createWindow('Notepad', '../dashboard_content/checklist.html')" class="dropup-div">New Checklist</button>
             <button onclick="createWindow('Task Manager', '../dashboard_content/tasks.html')" class="dropup-div">New Task Manager</button>
         </div>
     </div>
 
     <footer>
-        <p>&copy; 2026 WorkFlow. No rights reserved.</p>
+        <p id="footer-copyright">&copy; 2026 WorkFlow. No rights reserved.</p>
+        <div id="taskbar-items"></div>
     </footer>
 
     <script src="dashboard_functionality.js"></script>
+    <script src="../cursor_effect.js"></script>
 </body>
 </html>

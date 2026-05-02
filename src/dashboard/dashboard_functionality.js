@@ -14,6 +14,14 @@ function unshieldIframes() {
     });
 }
 
+function animateWindow(win, animClass, onComplete) {
+    win.classList.add(animClass);
+    win.addEventListener('animationend', () => {
+        win.classList.remove(animClass);
+        if (onComplete) onComplete();
+    }, { once: true });
+}
+
 document.addEventListener('mousemove', (e) => {
     if (activeDrag) {
         const {win, offsetX, offsetY} = activeDrag;
@@ -42,8 +50,8 @@ function createWindow(name, path) {
         <div class="titlebar">
             <div>${name}</div>.
             <div class="buttons">
-                <div class="btn min"></div>
                 <div class="btn max"></div>
+                <div class="btn min"></div>
                 <div class="btn close"></div>
             </div>
         </div>
@@ -69,13 +77,43 @@ function createWindow(name, path) {
         activeDrag = {win, offsetX: e.clientX - win.offsetLeft, offsetY: e.clientY - win.offsetTop};
     });
 
-    win.querySelector('.close').onclick = () => win.remove();
-    win.querySelector('.min').onclick = () => win.style.display = 'none';
+    // CLOSE
+    win.querySelector('.close').onclick = () => {
+        animateWindow(win, 'win-anim-close', () => win.remove());
+    };
+
+    // MINIMIZE
+    win.querySelector('.min').onclick = () => {
+        animateWindow(win, 'win-anim-minimize', () => {
+            win.style.display = 'none';
+            win.classList.remove('win-anim-minimize');
+
+            const chip = document.createElement('span');
+            chip.textContent = name;
+            chip.className = 'footer-task';
+            chip.title = `Click to restore "${name}"`;
+            chip.onclick = () => {
+                win.style.display = '';
+                animateWindow(win, 'win-anim-restore', null);
+                chip.remove();
+
+                if (document.getElementById('taskbar-items').children.length === 0) {
+                    document.getElementById('footer-copyright').style.display = '';
+                }
+            };
+
+            document.getElementById('taskbar-items').appendChild(chip);
+            document.getElementById('footer-copyright').style.display = 'none';
+        });
+    };
+
+    // MAXIMIZE
     win.querySelector('.max').onclick = () => {
         win.style.width = '100vw';
-        win.style.height = 'calc(100vh - 40px)';
+        win.style.height = 'calc(80vh)';
         win.style.top = '0';
         win.style.left = '0';
+        animateWindow(win, 'win-anim-maximize', null);
     };
 
     function initResize(dir, e) {
@@ -109,8 +147,57 @@ function resizeWindow(e, {win, dir, startX, startY, startW, startH, startLeft, s
     if (dir === 'tl') {win.style.width = Math.max(200, startW - dx) + 'px'; win.style.left = (startLeft + dx) + 'px'; win.style.height = Math.max(150, startH - dy) + 'px'; win.style.top = (startTop + dy) + 'px'}
 }
 
-function createCalendarWindow() {
+function createCalendar() {
     const calendarUrl = "https://calendar.google.com/calendar/embed?wkst=1&ctz=America%2FDenver&showPrint=0&src=dHJ1ZWVnZ2xlc3RvbkBnbWFpbC5jb20&src=Y2xhc3Nyb29tMTA4Mzg5MzM4NDY0MDYzNjc0Nzk3QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=YTdmMmU1NjkzMWYzYjAxNDAzNTY4MTYyNTc1OGMyOTVlYmJhM2NjZTRmMWRmYmMwNTQwNDE1OTQyZTllNmYxZkBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=ZW4udXNhI2hvbGlkYXlAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&color=%23039be5&color=%237cb342&color=%237cb342&color=%230b8043";
 
-createWindow('My Calendar', calendarUrl);
+    createWindow('My Calendar', calendarUrl);
 }
+
+function createSettings() {
+    const win = document.createElement('div');
+    win.className = 'window';
+    win.style.width = '95vw';
+    win.style.height = 'min(80vw, 80vh)';
+    win.style.top = '50%';
+    win.style.left = '50%';
+    win.style.transform = 'translate(-50%, -50%)';
+    win.style.zIndex = zIndex++;
+
+    win.innerHTML = `
+        <div class="content">
+            <iframe src="../dashboard_content/settings.html" style="width:100%;height:100%;border:none;"></iframe>
+        </div>
+    `;
+
+    document.getElementById('desktop').appendChild(win);
+
+    function handleMessage(e) {
+        if (e.data?.type === 'close-settings') {
+            win.remove();
+            window.removeEventListener('message', handleMessage); // cleanup
+        }
+    }
+
+    window.addEventListener('message', handleMessage);
+}
+
+window.addEventListener('message', (e) => {
+    const { type, value } = e.data ?? {};
+
+    if (type === 'set-theme') {
+        const isLight = value === 'light';
+        document.body.classList.toggle('dashboard-light', isLight);
+    }
+
+    if (type === 'set-bg-color') {
+        document.body.style.background = value;
+    }
+
+    if (type === 'set-brightness') {
+        document.body.style.filter = `brightness(${value}%)`;
+    }
+
+    if (type === 'reset-bg') {
+        document.body.style.background = '';
+    }
+});
